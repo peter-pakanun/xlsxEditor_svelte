@@ -50,7 +50,8 @@
           <input type="checkbox" id="showUserMenu" name="showUserMenu" class="hidden peer" bind:checked={userMenuVisible}>
           <div class="absolute right-0 z-20 transition origin-top-right -translate-y-5 opacity-0 pointer-events-none peer-checked:pointer-events-auto peer-checked:opacity-100 peer-checked:translate-y-0">
             <ul class="flex-col w-48 py-1 overflow-hidden text-gray-700 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5" on:click={() => userMenuVisible = false}>
-              <li class="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"><a href="/users/me">My Profile</a></li>
+              <li class="px-4 py-2 text-sm hover:bg-gray-100"><a class="block" href="/users/me">My Profile</a></li>
+              <li class="px-4 py-2 text-sm hover:bg-gray-100"><a class="block" href="/import">Import</a></li>
               <li class="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100" on:click={logout}>Logout</li>
             </ul>
           </div>
