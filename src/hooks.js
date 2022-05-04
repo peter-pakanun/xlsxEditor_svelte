@@ -25,6 +25,7 @@ export function getSession(event) {
     ? {
       user: {
         username: event.locals.user.username,
+        language: event.locals.user.language,
         avatar: event.locals.user.avatar,
       }
     }

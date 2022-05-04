@@ -63,6 +63,7 @@ export async function post({ request }) {
       message: 'Successfully signed in',
       user: {
         username: user.username,
+        language: user.language,
         avatar: user.avatar,
       },
     },

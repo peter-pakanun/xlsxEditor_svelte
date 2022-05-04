@@ -90,6 +90,7 @@ export async function post({ request }) {
       message: 'User created',
       user: {
         username: newUser.username,
+        language: newUser.language,
         avatar: newUser.avatar,
       },
     },

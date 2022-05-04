@@ -3,6 +3,7 @@ export async function get({ locals }) {
     status: 200,
     body: {
       username: locals.user?.username,
+      language: locals.user?.language,
       avatar: locals.user?.avatar,
     }
   };
