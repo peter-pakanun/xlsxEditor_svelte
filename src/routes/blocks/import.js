@@ -40,10 +40,10 @@ export async function post({ request, locals }) {
   if (oldBlocks.length) {
     for (let oldBlock of oldBlocks) {
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
-      for (const stringName in newBlock.originalStrings) {
+      for (const stringName in newBlock.oStrs) {
         // we have an edited string
-        let oldValue = oldBlock.originalStrings[stringName];
-        let newValue = newBlock.originalStrings[stringName];
+        let oldValue = oldBlock.oStrs[stringName];
+        let newValue = newBlock.oStrs[stringName];
         if (!oldValue || oldValue !== newValue) {
           toUpdate.push({
             id: oldBlock.id,
@@ -74,7 +74,7 @@ export async function post({ request, locals }) {
       let { id, sheet, stringName, oldValue, newValue, lastUpdated } = update;
       let updateOperation = {
         $set: {
-          [`originalStrings.${stringName}`]: newValue,
+          [`oStrs.${stringName}`]: newValue,
           updatedAt: new Date(),
           hasChanged: true,
         },
