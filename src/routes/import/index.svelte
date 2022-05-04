@@ -113,19 +113,41 @@
       }
 
       // compare with last definition
-      let lastSheet = lastDefinition?.sheets?.find((s) => s.name === sheetname);
+      let oldSheet = lastDefinition?.sheets?.find((s) => s.name === sheetname);
+      let newSheet = sheetDefinition;
+      let oldFields = [];
+      let newFields = [];
       let hasUpdate = false;
-      if (lastSheet) {
-        if (lastSheet.fields.length !== sheetDefinition.fields.length) {
-          logger.log(`Sheet '${sheetname}' has different field count`);
-          hasUpdate = true;
-        } else {
-          for (let i = 0; i < lastSheet.fields.length; i++) {
-            if (lastSheet.fields[i] !== sheetDefinition.fields[i]) {
-              logger.log(`Sheet '${sheetname}' has different field at ${i}`);
-              hasUpdate = true;
-            }
+      if (oldSheet) {
+        // check oldSheet's fields
+        for (let i = 0; i < oldSheet.fields.length; i++) {
+          let fieldObj = {
+            name: oldSheet.fields[i],
+          };
+          let newI = sheetDefinition.fields.indexOf(oldSheet.fields[i]);
+          if (newI === -1) {
+            logger.log(`Sheet '${sheetname}' -> '${oldSheet.fields[i]}' got removed`);
+            fieldObj.removed = true;
+            hasUpdate = true;
+          } else if (sheetDefinition.fields[newI] !== oldSheet.fields[i]) {
+            hasUpdate = true; // maybe the field index changed?
           }
+          oldFields.push(fieldObj);
+        }
+        // check newSheet's fields
+        for (let i = 0; i < newSheet.fields.length; i++) {
+          let fieldObj = {
+            name: newSheet.fields[i],
+          };
+          let oldI = oldSheet.fields.indexOf(newSheet.fields[i]);
+          if (oldI === -1) {
+            logger.log(`Sheet '${sheetname}' -> '${newSheet.fields[i]}' got added`);
+            fieldObj.added = true;
+            hasUpdate = true;
+          } else if (oldSheet.fields[oldI] !== newSheet.fields[i]) {
+            hasUpdate = true; // maybe the field index changed?
+          }
+          newFields.push(fieldObj);
         }
       } else {
         logger.log(`Found new Sheet: '${sheetname}'`);
@@ -134,8 +156,8 @@
       if (hasUpdate) {
         updatedSheets.push({
           name: sheetname,
-          oldFields: lastSheet?.fields,
-          newFields: sheetDefinition.fields,
+          oldFields,
+          newFields,
         });
       }
 
@@ -187,29 +209,23 @@
     <Logger bind:this={logger} />
 
     {#if newSheets.length || updatedSheets.length}
-      <div class="flex gap-2">
-        <div class="flex-1">
+      <div class="flex gap-2 text-gray-700">
+        <div class="flex-1 space-y-2">
           <h1 class="text-xl font-bold">Updated Sheets</h1>
-          <div class="h-64 p-2 overflow-y-scroll shadow-inner bg-slate-100">
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
             {#each updatedSheets as sheet}
-              <div class="flex items-center">
-                <div class="flex-1">
-                  <div class="font-bold">{sheet.name}</div>
-                  <div class="flex text-sm">
-                    <div class="flex flex-col">
-                      {#each sheet.oldFields as field}
-                        <div class="flex items-center">
-                          <div class="flex-1">{field}</div>
-                        </div>
-                      {/each}
-                    </div>
-                    <div class="flex flex-col">
-                      {#each sheet.newFields as field}
-                        <div class="flex items-center">
-                          <div class="flex-1">{field}</div>
-                        </div>
-                      {/each}
-                    </div>
+              <div>
+                <div class="font-bold">{sheet.name}</div>
+                <div class="flex gap-2 text-sm">
+                  <div class="flex-1 space-y-1">
+                    {#each sheet.oldFields as fieldObj}
+                      <div class="pl-3 rounded {fieldObj.removed ? 'text-red-700 line-through' : ''}">{fieldObj.name}</div>
+                    {/each}
+                  </div>
+                  <div class="flex-1 space-y-1">
+                    {#each sheet.newFields as fieldObj}
+                      <div class="pl-3 rounded {fieldObj.added ? 'text-green-700 underline' : ''}">{fieldObj.name}</div>
+                    {/each}
                   </div>
                 </div>
               </div>
@@ -217,18 +233,16 @@
           </div>
         </div>
 
-        <div class="flex-1">
+        <div class="flex-1 space-y-2">
           <h1 class="text-xl font-bold">New Sheets</h1>
-          <div class="h-64 p-2 overflow-y-scroll shadow-inner bg-slate-100">
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
             {#each newSheets as sheet}
-              <div class="flex items-center">
-                <div class="flex-1">
-                  <div class="font-bold">{sheet.name}</div>
-                  <div class="text-sm">
+              <div>
+                <div class="font-bold">{sheet.name}</div>
+                <div class="flex gap-2 text-sm">
+                  <div class="flex-1 space-y-1">
                     {#each sheet.fields as field}
-                      <div class="flex items-center">
-                        <div class="flex-1">{field}</div>
-                      </div>
+                      <div class="pl-3 text-green-700 underline rounded">{field}</div>
                     {/each}
                   </div>
                 </div>
