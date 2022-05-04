@@ -281,7 +281,7 @@
           importedCount += chunk.length;
           blockUpdated += data.updated;
           blockInserted += data.inserted;
-          logger.log(`[${sheetIndex}/${sheetCount}][${name}] ${blocksImported.toLocaleString()} of ${blocksToImport.toLocaleString()} blocks Uploaded!`);
+          logger.log(`[${sheetIndex}/${sheetCount}][${name}] ${blocksImported.toLocaleString()} of ${blocksToImport.toLocaleString()} blocks uploaded!`);
         } else {
           logger.log('Import failed!');
           importingData = false;
