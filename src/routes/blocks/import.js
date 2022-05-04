@@ -41,6 +41,7 @@ export async function post({ request, locals }) {
 
   let ids = newBlocks.map(block => block.id).filter(id => id);
   let oldBlocks = await Blocks.find({ sheet, id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
+  
   let toUpdate = [];
   if (oldBlocks.length) {
     for (let oldBlock of oldBlocks) {
@@ -54,6 +55,21 @@ export async function post({ request, locals }) {
             id: oldBlock.id,
             field,
             type: "o", // mean original
+            oldValue,
+            newValue,
+            lastUpdated: oldBlock.updatedAt,
+          });
+        }
+      }
+      for (const field in newBlock.tStrs) {
+        let oldValue = oldBlock.tStrs[field];
+        let newValue = newBlock.tStrs[field];
+        if (oldValue !== newValue) {
+          //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
+          toUpdate.push({
+            id: oldBlock.id,
+            field,
+            type: "t", // mean translated
             oldValue,
             newValue,
             lastUpdated: oldBlock.updatedAt,
@@ -77,10 +93,10 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { id, field, oldValue, newValue, lastUpdated } = update;
+      let { id, field, type, oldValue, newValue, lastUpdated } = update;
       let updateOperation = {
         $set: {
-          [`oStrs.${field}`]: newValue,
+          [type == 'o' ? 'oStrs.' + field : 'tStrs.' + field]: newValue,
           updatedAt: new Date(),
           hasChanged: true,
         },
@@ -90,6 +106,7 @@ export async function post({ request, locals }) {
         id,
         sheet,
         field,
+        type,
         oldValue,
         lastUpdated,
       });
