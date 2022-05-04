@@ -47,8 +47,8 @@ export async function post({ request, locals }) {
     for (let oldBlock of oldBlocks) {
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
       for (const field in newBlock.oStrs) {
-        let oldValue = oldBlock.oStrs[field];
-        let newValue = newBlock.oStrs[field];
+        let oldValue = oldBlock.oStrs?.[field];
+        let newValue = newBlock.oStrs?.[field];
         if (oldValue !== newValue) {
           //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
           toUpdate.push({
@@ -62,8 +62,8 @@ export async function post({ request, locals }) {
         }
       }
       for (const field in newBlock.tStrs) {
-        let oldValue = oldBlock.tStrs[field];
-        let newValue = newBlock.tStrs[field];
+        let oldValue = oldBlock.tStrs?.[field];
+        let newValue = newBlock.tStrs?.[field];
         if (oldValue !== newValue) {
           //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
           toUpdate.push({
