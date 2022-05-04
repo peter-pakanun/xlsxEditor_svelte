@@ -209,6 +209,7 @@
       lastDefinition = definition;
       updatedSheets = [];
       newSheets = [];
+      removedSheets = [];
     } else {
       logger.log('Definition upload failed!');
     }
@@ -370,7 +371,7 @@
 
       <div>*** Please note that renaming sheets is not supported yet! ***</div>
 
-      <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Upload Definition</Button>
+      <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Update Definition</Button>
     {:else if definition.sheets.length && !importingData}
       <h1 class="text-xl font-bold">Definition up to date!</h1>
       <Button on:click={beginImport} bind:disabled={importingData}>Begin Import</Button>
