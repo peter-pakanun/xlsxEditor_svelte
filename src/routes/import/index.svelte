@@ -241,17 +241,26 @@
         if (!id) continue;
         let block = {
           id,
+          tlNote: hasTranslationNote ? worksheet[utils.encode_cell({ c: 1, r })]?.v : undefined,
           oStrs: {},
+          tStrs: {},
         };
         for (let c = 0; c < fields.length; c++) {
           let field = fields[c];
-          let cell = utils.encode_cell({
+          let oCellCol = c * 3 + (hasTranslationNote ? 2 : 1);
+          let oCell = utils.encode_cell({
             r: r,
-            c: c * 3 + (hasTranslationNote ? 2 : 1)
+            c: oCellCol
           });
-          let value = worksheet[cell]?.v;
-          if (!value) continue;
-          block.oStrs[field] = value;
+          let oValue = worksheet[oCell]?.v;
+          if (oValue) block.oStrs[field] = oValue;
+          let tCellCol = oCellCol + 1;
+          let tCell = utils.encode_cell({
+            r: r,
+            c: tCellCol
+          });
+          let tValue = worksheet[tCell]?.v;
+          if (tValue) block.tStrs[field] = tValue;
         }
         blocks.push(block);
       }
