@@ -22,6 +22,7 @@
 
 <script>
 	import { read, utils } from 'xlsx';
+	import { goto } from '$app/navigation';
 	import Button from '$lib/components/Button.svelte';
 	import FileInput from '$lib/components/FileInput.svelte';
   import Logger from '$lib/components/Logger.svelte';
@@ -111,6 +112,11 @@
           return;
         }
         
+        // check if field contains weird characters
+        if (field.match(/[^a-zA-Z0-9_ ]/)) {
+          logger.log(`Sheet '${sheetname}' has invalid field '${field}' at column ${c}, abort!`);
+          return;
+        }
         sheetDefinition.fields.push(field);
       }
 
@@ -210,14 +216,93 @@
   }
 
   let importingData = false;
+  let importedCount = 0;
+  let blockUpdated = 0;
+  let blockInserted = 0;
+  let importFinished = false;
   async function beginImport() {
     if (importingData) return;
     importingData = true;
+    importedCount = 0;
+
+    logger.log('Importing data, please wait... (this may take a while)');
+    for (let sheetDefinition of definition.sheets) {
+      let { name, fields, hasTranslationNote } = sheetDefinition;
+      let worksheet = workbook.Sheets[name];
+      let range = utils.decode_range(worksheet['!ref']);
+      let blocks = [];
+
+      logger.log(`Importing sheet '${name}'`);
+      for (let r = 1; r <= range.e.r; r++) {
+        let id = worksheet[utils.encode_cell({ c: 0, r })]?.v;
+        if (!id) continue;
+        let block = {
+          id,
+          oStrs: {},
+        };
+        for (let c = 0; c < fields.length; c++) {
+          let field = fields[c];
+          let cell = utils.encode_cell({
+            r: r,
+            c: c * 3 + (hasTranslationNote ? 2 : 1)
+          });
+          let value = worksheet[cell]?.v;
+          if (!value) continue;
+          block.oStrs[field] = value;
+        }
+        blocks.push(block);
+      }
+      logger.log(`Found ${blocks.length} blocks to import`);
+
+      // split blocks into chunks
+      let chunks = [];
+      let chunkMaxSize = 1000;
+      let blocksToImport = blocks.length;
+      let blocksImported = 0;
+      while (blocks.length > 0) {
+        let chunk = blocks.splice(0, chunkMaxSize);
+        chunks.push(chunk);
+      }
+      // upload chunks
+      logger.log(`Uploading ${chunks.length} chunks`);
+      for (let chunk of chunks) {
+        let response = await fetch('/blocks/import', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            sheet: name,
+            newBlocks: chunk,
+          })
+        });
+        if (response.status === 200) {
+          let data = await response.json();
+          blocksImported += chunk.length;
+          importedCount += chunk.length;
+          blockUpdated += data.updated;
+          blockInserted += data.inserted;
+          logger.log(`[${blocksImported.toLocaleString()}/${blocksToImport.toLocaleString()}] Blocks Uploaded!`);
+        } else {
+          logger.log('Import failed!');
+          importingData = false;
+          return;
+        }
+      }
+    }
+
+    logger.log('Import finished!');
+    logger.log(`Total ${importedCount} blocks!`);
+    logger.log(`Updated ${blockUpdated} blocks!`);
+    logger.log(`Inserted ${blockInserted} blocks!`);
+    importFinished = true;
   }
 </script>
 
 <div class="space-y-4">
-	<FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
+  {#if !importingData}
+	  <FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
+  {/if}
 
   <div class="p-4 space-y-5 rounded shadow bg-slate-50">
     <Logger bind:this={logger} />
@@ -287,9 +372,14 @@
       <div>*** Please note that renaming sheets is not supported yet! ***</div>
 
       <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Upload Definition</Button>
-    {:else if definition.sheets.length}
+    {:else if definition.sheets.length && !importingData}
       <h1 class="text-xl font-bold">Definition up to date!</h1>
       <Button on:click={beginImport} bind:disabled={importingData}>Begin Import</Button>
+    {/if}
+
+    {#if importFinished}
+      <h1 class="text-xl font-bold">Import finished!</h1>
+      <Button on:click={() => goto('/')}>Begin Edit</Button>
     {/if}
 	</div>
 </div>
