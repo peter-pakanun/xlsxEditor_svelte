@@ -1,7 +1,7 @@
 import clientPromise from '$lib/db';
 
 export async function post({ request, locals }) {
-  let newBlocks = await request.json().catch(() => null) || {};
+  let { sheet, newBlocks } = await request.json().catch(() => null) || {};
   let { user } = locals;
   let language = user.language;
 
@@ -15,13 +15,18 @@ export async function post({ request, locals }) {
       status: 403,
     };
   }
+  if (!sheet) {
+    return {
+      status: 400,
+    }
+  }
   if (!newBlocks || !Array.isArray(newBlocks) || newBlocks.length <= 0) {
     return {
       status: 400,
     }
   }
   for (let block of newBlocks) {
-    if (!block.id || !block.sheet) {
+    if (!block.id) {
       return {
         status: 400,
       };
@@ -35,7 +40,7 @@ export async function post({ request, locals }) {
   const Histories = client.db().collection(language + '_histories');
 
   let ids = newBlocks.map(block => block.id).filter(id => id);
-  let oldBlocks = await Blocks.find({ id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
+  let oldBlocks = await Blocks.find({ sheet, id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
   let toUpdate = [];
   if (oldBlocks.length) {
     for (let oldBlock of oldBlocks) {
@@ -44,10 +49,10 @@ export async function post({ request, locals }) {
         // we have an edited string
         let oldValue = oldBlock.oStrs[stringName];
         let newValue = newBlock.oStrs[stringName];
-        if (!oldValue || oldValue !== newValue) {
+        if (oldValue !== newValue) {
+          //console.log(`"${oldBlock.id}" "${stringName}" "${oldValue}" !== "${newValue}"`);
           toUpdate.push({
             id: oldBlock.id,
-            sheet: oldBlock.sheet,
             stringName,
             oldValue,
             newValue,
@@ -63,6 +68,7 @@ export async function post({ request, locals }) {
   if (toInsert.length) {
     for (let block of toInsert) {
       block.updatedAt = new Date();
+      block.sheet = sheet;
     }
     promises.push(Blocks.insertMany(toInsert));
   }
@@ -71,7 +77,7 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { id, sheet, stringName, oldValue, newValue, lastUpdated } = update;
+      let { id, stringName, oldValue, newValue, lastUpdated } = update;
       let updateOperation = {
         $set: {
           [`oStrs.${stringName}`]: newValue,
