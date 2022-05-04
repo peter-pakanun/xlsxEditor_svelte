@@ -37,7 +37,7 @@
     sheets: []
   };
 
-  let changedSheets = [];
+  let updatedSheets = [];
   let newSheets = [];
 
 	async function handleFileChange() {
@@ -57,7 +57,7 @@
 			sheets: []
 		};
 
-    changedSheets = [];
+    updatedSheets = [];
     newSheets = [];
     for (let sheetname of workbook.SheetNames) {
       let sheet = workbook.Sheets[sheetname];
@@ -114,16 +114,16 @@
 
       // compare with last definition
       let lastSheet = lastDefinition?.sheets?.find((s) => s.name === sheetname);
-      let changed = false;
+      let hasUpdate = false;
       if (lastSheet) {
         if (lastSheet.fields.length !== sheetDefinition.fields.length) {
           logger.log(`Sheet '${sheetname}' has different field count`);
-          changed = true;
+          hasUpdate = true;
         } else {
           for (let i = 0; i < lastSheet.fields.length; i++) {
             if (lastSheet.fields[i] !== sheetDefinition.fields[i]) {
               logger.log(`Sheet '${sheetname}' has different field at ${i}`);
-              changed = true;
+              hasUpdate = true;
             }
           }
         }
@@ -131,8 +131,8 @@
         logger.log(`Found new Sheet: '${sheetname}'`);
         newSheets.push(sheetDefinition);
       }
-      if (changed) {
-        changedSheets.push({
+      if (hasUpdate) {
+        updatedSheets.push({
           name: sheetname,
           oldFields: lastSheet?.fields,
           newFields: sheetDefinition.fields,
@@ -142,7 +142,7 @@
       definition.sheets.push(sheetDefinition);
     }
 
-    changedSheets = changedSheets;
+    updatedSheets = updatedSheets;
     newSheets = newSheets;
 
     logger.log('Definition loaded!');
@@ -165,7 +165,7 @@
     if (response.status === 200) {
       logger.log('Definition uploaded!');
       lastDefinition = definition;
-      changedSheets = [];
+      updatedSheets = [];
       newSheets = [];
     } else {
       logger.log('Definition upload failed!');
@@ -186,12 +186,12 @@
   <div class="p-4 space-y-5 rounded shadow bg-slate-50">
     <Logger bind:this={logger} />
 
-    {#if newSheets.length || changedSheets.length}
+    {#if newSheets.length || updatedSheets.length}
       <div class="flex gap-2">
         <div class="flex-1">
-          <h1 class="text-xl font-bold">Changed Sheets</h1>
+          <h1 class="text-xl font-bold">Updated Sheets</h1>
           <div class="h-64 p-2 overflow-y-scroll shadow-inner bg-slate-100">
-            {#each changedSheets as sheet}
+            {#each updatedSheets as sheet}
               <div class="flex items-center">
                 <div class="flex-1">
                   <div class="font-bold">{sheet.name}</div>
