@@ -33,6 +33,9 @@
 	let files;
 	let workbook;
 
+  let changedSheets = [];
+  let newSheets = [];
+
 	async function handleFileChange() {
 		if (!files.length) return;
     logger.log('Reading file, please wait...');
@@ -50,6 +53,8 @@
 			sheets: []
 		};
 
+    changedSheets = [];
+    newSheets = [];
     for (let sheetname of workbook.SheetNames) {
       let sheet = workbook.Sheets[sheetname];
       let sheetDefinition = {
@@ -103,8 +108,38 @@
         sheetDefinition.fields.push(field);
       }
 
+      // compare with last definition
+      let lastSheet = lastDefinition?.sheets?.find((s) => s.name === sheetname);
+      let changed = false;
+      if (lastSheet) {
+        if (lastSheet.fields.length !== sheetDefinition.fields.length) {
+          logger.log(`Sheet '${sheetname}' has different field count`);
+          changed = true;
+        } else {
+          for (let i = 0; i < lastSheet.fields.length; i++) {
+            if (lastSheet.fields[i] !== sheetDefinition.fields[i]) {
+              logger.log(`Sheet '${sheetname}' has different field at ${i}`);
+              changed = true;
+            }
+          }
+        }
+      } else {
+        logger.log(`Sheet '${sheetname}' is new`);
+        newSheets.push(sheetDefinition);
+      }
+      if (changed) {
+        changedSheets.push({
+          name: sheetname,
+          oldFields: lastSheet?.fields,
+          newFields: sheetDefinition.fields,
+        });
+      }
+
       definition.sheets.push(sheetDefinition);
     }
+
+    changedSheets = changedSheets;
+    newSheets = newSheets;
 
     logger.log('Definition loaded!');
     console.log(definition);
@@ -116,5 +151,46 @@
 
   <div class="bg-slate-50 shadow rounded p-4">
     <Logger bind:this={logger} />
+    <div class="flex">
+      <div class="flex-1">
+        <h1>New Sheets</h1>
+        {#each newSheets as sheet}
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div class="font-bold">{sheet.name}</div>
+              <div class="text-sm">
+                {#each sheet.fields as field}
+                  <div class="flex items-center">
+                    <div class="flex-1">{field}</div>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
+      <div class="flex-1">
+        <h1>Changed Sheets</h1>
+        {#each changedSheets as sheet}
+          <div class="flex items-center">
+            <div class="flex-1">
+              <div class="font-bold">{sheet.name}</div>
+              <div class="text-sm">
+                {#each sheet.oldFields as field}
+                  <div class="flex items-center">
+                    <div class="flex-1">{field}</div>
+                  </div>
+                {/each}
+                {#each sheet.newFields as field}
+                  <div class="flex items-center">
+                    <div class="flex-1">{field}</div>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
 	</div>
 </div>
