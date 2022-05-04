@@ -226,13 +226,16 @@
     importedCount = 0;
 
     logger.log('Importing data, please wait... (this may take a while)');
+    let sheetCount = definition.sheets.length;
+    let sheetIndex = 0;
     for (let sheetDefinition of definition.sheets) {
       let { name, fields, hasTranslationNote } = sheetDefinition;
       let worksheet = workbook.Sheets[name];
       let range = utils.decode_range(worksheet['!ref']);
       let blocks = [];
+      sheetIndex++;
 
-      logger.log(`Importing sheet '${name}'`);
+      logger.log(`[${sheetIndex}/${sheetCount}] Importing sheet '${name}'`);
       for (let r = 1; r <= range.e.r; r++) {
         let id = worksheet[utils.encode_cell({ c: 0, r })]?.v;
         if (!id) continue;
@@ -252,9 +255,8 @@
         }
         blocks.push(block);
       }
-      logger.log(`Found ${blocks.length} blocks to import`);
 
-      // split blocks into chunks
+      // Upload in chunks of 1,000
       let chunks = [];
       let chunkMaxSize = 1000;
       let blocksToImport = blocks.length;
@@ -263,8 +265,6 @@
         let chunk = blocks.splice(0, chunkMaxSize);
         chunks.push(chunk);
       }
-      // upload chunks
-      logger.log(`Uploading ${chunks.length} chunks`);
       for (let chunk of chunks) {
         let response = await fetch('/blocks/import', {
           method: 'POST',
@@ -282,7 +282,7 @@
           importedCount += chunk.length;
           blockUpdated += data.updated;
           blockInserted += data.inserted;
-          logger.log(`[${blocksImported.toLocaleString()}/${blocksToImport.toLocaleString()}] Blocks Uploaded!`);
+          logger.log(`[${sheetIndex}/${sheetCount}] ${blocksImported.toLocaleString()} of ${blocksToImport.toLocaleString()} blocks Uploaded!`);
         } else {
           logger.log('Import failed!');
           importingData = false;
