@@ -284,6 +284,8 @@
         </div>
       </div>
 
+      <div>*** Please note that renaming sheets is not supported yet! ***</div>
+
       <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Upload Definition</Button>
     {:else if definition.sheets.length}
       <h1 class="text-xl font-bold">Definition up to date!</h1>
