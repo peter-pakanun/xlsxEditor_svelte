@@ -235,7 +235,6 @@
       let blocks = [];
       sheetIndex++;
 
-      logger.log(`[${sheetIndex}/${sheetCount}] Importing sheet '${name}'`);
       for (let r = 1; r <= range.e.r; r++) {
         let id = worksheet[utils.encode_cell({ c: 0, r })]?.v;
         if (!id) continue;
@@ -282,7 +281,7 @@
           importedCount += chunk.length;
           blockUpdated += data.updated;
           blockInserted += data.inserted;
-          logger.log(`[${sheetIndex}/${sheetCount}] ${blocksImported.toLocaleString()} of ${blocksToImport.toLocaleString()} blocks Uploaded!`);
+          logger.log(`[${sheetIndex}/${sheetCount}][${name}] ${blocksImported.toLocaleString()} of ${blocksToImport.toLocaleString()} blocks Uploaded!`);
         } else {
           logger.log('Import failed!');
           importingData = false;
@@ -291,7 +290,7 @@
       }
     }
 
-    logger.log('Import finished!');
+    logger.log('Upload completed!');
     logger.log(`Total ${importedCount} blocks!`);
     logger.log(`Updated ${blockUpdated} blocks!`);
     logger.log(`Inserted ${blockInserted} blocks!`);
