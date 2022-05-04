@@ -32,6 +32,10 @@
   let logger;
 	let files;
 	let workbook;
+  let definition = {
+    language: user.language,
+    sheets: []
+  };
 
   let changedSheets = [];
   let newSheets = [];
@@ -48,7 +52,7 @@
 
     logger.log('Sheets loaded!');
     logger.log('Comparing definitions...');
-		let definition = {
+		definition = {
 			language: user.language,
 			sheets: []
 		};
@@ -65,7 +69,7 @@
 
       // check if Cell A1 is "ID" or not
       if (sheet['A1']?.v !== 'ID') {
-        logger.log(`Sheet '${sheetname}' has no ID column, abort.`);
+        logger.log(`Sheet '${sheetname}' has no ID column, abort!`);
         return;
       }
       
@@ -81,7 +85,7 @@
       } else if (colCount % 3 === 1) {
         sheetDefinition.hasTranslationNote = true;
       } else {
-        logger.log(`Sheet '${sheetname}' has invalid column count, abort.`);
+        logger.log(`Sheet '${sheetname}' has invalid column count, abort!`);
         return;
       }
 
@@ -90,18 +94,18 @@
         let fieldCell = utils.encode_cell({ c, r: 0 });
         let field = sheet[fieldCell]?.v;
         if (!field) {
-          logger.log(`Sheet '${sheetname}' has no field at column ${c}, abort.`);
+          logger.log(`Sheet '${sheetname}' has no field at column ${c}, abort!`);
           return;
         }
         let translationCell = utils.encode_cell({ c: c + 1, r: 0 });
         let translation = sheet[translationCell]?.v;
         if (translation !== 'Translation') {
-          logger.log(`Sheet '${sheetname}' has no translation at column ${c + 1}, abort.`);
+          logger.log(`Sheet '${sheetname}' has no translation at column ${c + 1}, abort!`);
           return;
         }
         // if this is a second or later iteration, check preceding field if it's undefined
         if (c > 2 && sheet[utils.encode_cell({ c: c - 1, r: 0 })]?.v !== undefined) {
-          logger.log(`Sheet '${sheetname}' has no null field at column ${c - 1}, abort.`);
+          logger.log(`Sheet '${sheetname}' has no null field at column ${c - 1}, abort!`);
           return;
         }
         
@@ -124,7 +128,7 @@
           }
         }
       } else {
-        logger.log(`Sheet '${sheetname}' is new`);
+        logger.log(`Found new Sheet: '${sheetname}'`);
         newSheets.push(sheetDefinition);
       }
       if (changed) {
@@ -144,53 +148,100 @@
     logger.log('Definition loaded!');
     console.log(definition);
 	}
+
+  let uploadingDefinition = false;
+  async function uploadDefinition() {
+    if (uploadingDefinition) return;
+    uploadingDefinition = true;
+
+    logger.log('Uploading definition, please wait...');
+    let response = await fetch('/definitions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(definition)
+    });
+    if (response.status === 200) {
+      logger.log('Definition uploaded!');
+      lastDefinition = definition;
+      changedSheets = [];
+      newSheets = [];
+    } else {
+      logger.log('Definition upload failed!');
+    }
+    uploadingDefinition = false;
+  }
+
+  let importingData = false;
+  async function beginImport() {
+    if (importingData) return;
+    importingData = true;
+  }
 </script>
 
 <div class="space-y-4">
 	<FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
 
-  <div class="bg-slate-50 shadow rounded p-4">
+  <div class="p-4 space-y-5 rounded shadow bg-slate-50">
     <Logger bind:this={logger} />
-    <div class="flex">
-      <div class="flex-1">
-        <h1>New Sheets</h1>
-        {#each newSheets as sheet}
-          <div class="flex items-center">
-            <div class="flex-1">
-              <div class="font-bold">{sheet.name}</div>
-              <div class="text-sm">
-                {#each sheet.fields as field}
-                  <div class="flex items-center">
-                    <div class="flex-1">{field}</div>
+
+    {#if newSheets.length || changedSheets.length}
+      <div class="flex gap-2">
+        <div class="flex-1">
+          <h1 class="text-xl font-bold">Changed Sheets</h1>
+          <div class="h-64 p-2 overflow-y-scroll shadow-inner bg-slate-100">
+            {#each changedSheets as sheet}
+              <div class="flex items-center">
+                <div class="flex-1">
+                  <div class="font-bold">{sheet.name}</div>
+                  <div class="flex text-sm">
+                    <div class="flex flex-col">
+                      {#each sheet.oldFields as field}
+                        <div class="flex items-center">
+                          <div class="flex-1">{field}</div>
+                        </div>
+                      {/each}
+                    </div>
+                    <div class="flex flex-col">
+                      {#each sheet.newFields as field}
+                        <div class="flex items-center">
+                          <div class="flex-1">{field}</div>
+                        </div>
+                      {/each}
+                    </div>
                   </div>
-                {/each}
+                </div>
               </div>
-            </div>
+            {/each}
           </div>
-        {/each}
-      </div>
-      <div class="flex-1">
-        <h1>Changed Sheets</h1>
-        {#each changedSheets as sheet}
-          <div class="flex items-center">
-            <div class="flex-1">
-              <div class="font-bold">{sheet.name}</div>
-              <div class="text-sm">
-                {#each sheet.oldFields as field}
-                  <div class="flex items-center">
-                    <div class="flex-1">{field}</div>
+        </div>
+
+        <div class="flex-1">
+          <h1 class="text-xl font-bold">New Sheets</h1>
+          <div class="h-64 p-2 overflow-y-scroll shadow-inner bg-slate-100">
+            {#each newSheets as sheet}
+              <div class="flex items-center">
+                <div class="flex-1">
+                  <div class="font-bold">{sheet.name}</div>
+                  <div class="text-sm">
+                    {#each sheet.fields as field}
+                      <div class="flex items-center">
+                        <div class="flex-1">{field}</div>
+                      </div>
+                    {/each}
                   </div>
-                {/each}
-                {#each sheet.newFields as field}
-                  <div class="flex items-center">
-                    <div class="flex-1">{field}</div>
-                  </div>
-                {/each}
+                </div>
               </div>
-            </div>
+            {/each}
           </div>
-        {/each}
+        </div>
       </div>
-    </div>
+
+      <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Upload Definition</Button>
+    {:else if definition.sheets.length}
+      <h1 class="text-xl font-bold">Definition up to date!</h1>
+      <Button on:click={beginImport} bind:disabled={importingData}>Begin Import</Button>
+    {/if}
 	</div>
 </div>
