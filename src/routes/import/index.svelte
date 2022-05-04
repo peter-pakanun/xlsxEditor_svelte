@@ -222,7 +222,7 @@
   <div class="p-4 space-y-5 rounded shadow bg-slate-50">
     <Logger bind:this={logger} />
 
-    {#if newSheets.length || updatedSheets.length}
+    {#if newSheets.length || updatedSheets.length || removedSheets.length}
       <div class="flex gap-2 text-gray-700">
         <div class="flex-1 space-y-2">
           <h1 class="text-xl font-bold">Updated Sheets</h1>
