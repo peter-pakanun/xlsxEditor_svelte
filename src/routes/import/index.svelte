@@ -39,6 +39,7 @@
 
   let updatedSheets = [];
   let newSheets = [];
+  let removedSheets = [];
 
 	async function handleFileChange() {
 		if (!files.length) return;
@@ -59,6 +60,7 @@
 
     updatedSheets = [];
     newSheets = [];
+    removedSheets = [];
     for (let sheetname of workbook.SheetNames) {
       let sheet = workbook.Sheets[sheetname];
       let sheetDefinition = {
@@ -167,6 +169,18 @@
     updatedSheets = updatedSheets;
     newSheets = newSheets;
 
+    // find removed sheets
+    if (lastDefinition) {
+      for (let oldSheet of lastDefinition.sheets) {
+        let newSheet = definition.sheets.find((s) => s.name === oldSheet.name);
+        if (!newSheet) {
+          logger.log(`Sheet '${oldSheet.name}' got removed!!!`);
+          removedSheets.push(oldSheet);
+        }
+      }
+    }
+    removedSheets = removedSheets;
+
     logger.log('Definition loaded!');
     console.log(definition);
 	}
@@ -219,12 +233,12 @@
                 <div class="flex gap-2 text-sm">
                   <div class="flex-1 space-y-1">
                     {#each sheet.oldFields as fieldObj}
-                      <div class="pl-3 rounded {fieldObj.removed ? 'text-red-700 line-through' : ''}">{fieldObj.name}</div>
+                      <div class="pl-3 {fieldObj.removed ? 'text-red-700 line-through' : ''}">{fieldObj.name}</div>
                     {/each}
                   </div>
                   <div class="flex-1 space-y-1">
                     {#each sheet.newFields as fieldObj}
-                      <div class="pl-3 rounded {fieldObj.added ? 'text-green-700 underline' : ''}">{fieldObj.name}</div>
+                      <div class="pl-3 {fieldObj.added ? 'text-green-700 underline' : ''}">{fieldObj.name}</div>
                     {/each}
                   </div>
                 </div>
@@ -242,7 +256,25 @@
                 <div class="flex gap-2 text-sm">
                   <div class="flex-1 space-y-1">
                     {#each sheet.fields as field}
-                      <div class="pl-3 text-green-700 underline rounded">{field}</div>
+                      <div class="pl-3 text-green-700 underline">{field}</div>
+                    {/each}
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        <div class="flex-1 space-y-2">
+          <h1 class="text-xl font-bold">Removed Sheets</h1>
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
+            {#each removedSheets as sheet}
+              <div>
+                <div class="font-bold text-red-700 line-through">{sheet.name}</div>
+                <div class="flex gap-2 text-sm">
+                  <div class="flex-1 space-y-1">
+                    {#each sheet.fields as field}
+                      <div class="pl-3 text-red-700 line-through">{field}</div>
                     {/each}
                   </div>
                 </div>
