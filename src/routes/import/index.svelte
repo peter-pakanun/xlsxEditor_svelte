@@ -174,7 +174,7 @@
       for (let oldSheet of lastDefinition.sheets) {
         let newSheet = definition.sheets.find((s) => s.name === oldSheet.name);
         if (!newSheet) {
-          logger.log(`Sheet '${oldSheet.name}' got removed!!!`);
+          logger.log(`Sheet '${oldSheet.name}' got removed!`);
           removedSheets.push(oldSheet);
         }
       }
