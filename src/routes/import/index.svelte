@@ -94,6 +94,12 @@
           logger.log(`Sheet '${sheetname}' has no translation at column ${c + 1}, abort.`);
           return;
         }
+        // if this is a second or later iteration, check preceding field if it's undefined
+        if (c > 2 && sheet[utils.encode_cell({ c: c - 1, r: 0 })]?.v !== undefined) {
+          logger.log(`Sheet '${sheetname}' has no null field at column ${c - 1}, abort.`);
+          return;
+        }
+        
         sheetDefinition.fields.push(field);
       }
 
