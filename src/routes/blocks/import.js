@@ -76,6 +76,7 @@ export async function post({ request, locals }) {
           });
         }
       }
+      // TODO: check and update tlNote too
     }
   }
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
