@@ -67,6 +67,7 @@
 		</div>
 		<div>
 			<Input label="Username" bind:value={user.username} readonly></Input>
+			<Input label="Language" bind:value={user.language} readonly></Input>
       <form on:submit|preventDefault={changePassword}>
         <Input label="Password" type="password" bind:value={password} on:input={() => message = ""}></Input>
         {#if password.length > 0}
