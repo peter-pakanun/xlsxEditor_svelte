@@ -45,15 +45,15 @@ export async function post({ request, locals }) {
   if (oldBlocks.length) {
     for (let oldBlock of oldBlocks) {
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
-      for (const stringName in newBlock.oStrs) {
-        // we have an edited string
-        let oldValue = oldBlock.oStrs[stringName];
-        let newValue = newBlock.oStrs[stringName];
+      for (const field in newBlock.oStrs) {
+        let oldValue = oldBlock.oStrs[field];
+        let newValue = newBlock.oStrs[field];
         if (oldValue !== newValue) {
-          //console.log(`"${oldBlock.id}" "${stringName}" "${oldValue}" !== "${newValue}"`);
+          //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
           toUpdate.push({
             id: oldBlock.id,
-            stringName,
+            field,
+            type: "o", // mean original
             oldValue,
             newValue,
             lastUpdated: oldBlock.updatedAt,
@@ -77,10 +77,10 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { id, stringName, oldValue, newValue, lastUpdated } = update;
+      let { id, field, oldValue, newValue, lastUpdated } = update;
       let updateOperation = {
         $set: {
-          [`oStrs.${stringName}`]: newValue,
+          [`oStrs.${field}`]: newValue,
           updatedAt: new Date(),
           hasChanged: true,
         },
@@ -89,7 +89,7 @@ export async function post({ request, locals }) {
       historyToInsert.push({
         id,
         sheet,
-        stringName,
+        field,
         oldValue,
         lastUpdated,
       });
