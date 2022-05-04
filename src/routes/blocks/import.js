@@ -21,32 +21,32 @@ export async function post({ request, locals }) {
     }
   }
   for (let block of newBlocks) {
-    if (!block.name || !block.sheet) {
+    if (!block.id || !block.sheet) {
       return {
         status: 400,
       };
     }
     // TODO: make sure the sheet is valid
-    // TODO: make sure block name is a unique index
+    // TODO: make sure block id is a unique index
   }
 
   const client = await clientPromise;
   const Blocks = client.db().collection(language + '_blocks');
   const Histories = client.db().collection(language + '_histories');
 
-  let names = newBlocks.map(block => block.name).filter(name => name);
-  let oldBlocks = await Blocks.find({ name: { $in: names } }).toArray().catch(() => { console.error('error'); });
+  let ids = newBlocks.map(block => block.id).filter(id => id);
+  let oldBlocks = await Blocks.find({ id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
   let toUpdate = [];
   if (oldBlocks.length) {
     for (let oldBlock of oldBlocks) {
-      let newBlock = newBlocks.find(block => block.name === oldBlock.name);
+      let newBlock = newBlocks.find(block => block.id === oldBlock.id);
       for (const stringName in newBlock.originalStrings) {
         // we have an edited string
         let oldValue = oldBlock.originalStrings[stringName];
         let newValue = newBlock.originalStrings[stringName];
         if (!oldValue || oldValue !== newValue) {
           toUpdate.push({
-            name: oldBlock.name,
+            id: oldBlock.id,
             sheet: oldBlock.sheet,
             stringName,
             oldValue,
@@ -57,7 +57,7 @@ export async function post({ request, locals }) {
       }
     }
   }
-  let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.name === block.name));
+  let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
 
   let promises = [];
   if (toInsert.length) {
@@ -71,7 +71,7 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { name, sheet, stringName, oldValue, newValue, lastUpdated } = update;
+      let { id, sheet, stringName, oldValue, newValue, lastUpdated } = update;
       let updateOperation = {
         $set: {
           [`originalStrings.${stringName}`]: newValue,
@@ -79,9 +79,9 @@ export async function post({ request, locals }) {
           hasChanged: true,
         },
       };
-      updateBulk.find({ name, sheet }).updateOne(updateOperation);
+      updateBulk.find({ id, sheet }).updateOne(updateOperation);
       historyToInsert.push({
-        name,
+        id,
         sheet,
         stringName,
         oldValue,
