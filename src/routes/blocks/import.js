@@ -65,7 +65,7 @@ export async function post({ request, locals }) {
             oldValue: oldOriginal,
             newValue: newOriginal,
             lastUpdated: oldBlock.updatedAt,
-            aLV: oldTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
+            aLV: newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
           if (!oldOriginal) {
