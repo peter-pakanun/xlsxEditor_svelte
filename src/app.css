@@ -9,11 +9,11 @@
 }
 
 ::-webkit-scrollbar-track {
-  opacity: 0;
+  @apply bg-slate-500/25;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  @apply bg-slate-200/50;
   border-radius: 2px;
 }
 
