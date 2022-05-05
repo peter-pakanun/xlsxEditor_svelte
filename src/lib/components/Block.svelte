@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   export let fields = ["field_1"];
   export let block = {
     id: "identifier",
@@ -13,6 +14,15 @@
   };
 
   let colorClass = block?.hasChanged ? "bg-orange-300" : "bg-blue-300";
+  
+  onMount(() => {
+    // check if there's a missing translation
+    fields.forEach(field => {
+      if (block.oStrs[field] && !block.tStrs[field]) {
+        colorClass = "bg-red-300";
+      }
+    });
+  });
 </script>
 
 

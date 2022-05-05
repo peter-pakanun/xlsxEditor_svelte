@@ -93,6 +93,7 @@ export async function post({ request, locals }) {
     for (let block of toInsert) {
       block.updatedAt = new Date();
       block.sheet = sheet;
+      block.aLV = 2;
     }
     try {
       await Blocks.insertMany(toInsert);
