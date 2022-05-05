@@ -24,7 +24,7 @@
 	<div class="w-1 {colorClass}" />
 
 	<div class="flex-1">
-		<div class="px-2 py-1 text-sky-300 {colorClass}">
+		<div class="px-2 py-1 text-slate-100 {colorClass}">
 			{block.id}
 		</div>
 
