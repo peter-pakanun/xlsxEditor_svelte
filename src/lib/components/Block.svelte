@@ -40,7 +40,7 @@
           <!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded shadow-sm outline-none pointer-events-none">{block.oStrs[field]}</div> -->
         </div>
         <div class="flex-1">
-          <textarea bind:value={block.tStrs[field]} on:input={() => editing = true} class="w-full h-20 p-1 rounded shadow-sm outline-none resize-none bg-slate-900/50 text-slate-200 {editing?'ring-2 ring-purple-800': ''}"></textarea>
+          <textarea bind:value={block.tStrs[field]} on:input={() => editing = true} class="w-full h-20 p-1 rounded shadow-sm outline-none resize-none bg-slate-900/50 text-slate-200 {editing?'ring-2 ring-purple-800 bg-purple-900/50': ''}"></textarea>
         </div>
       </div>
       {/if}
