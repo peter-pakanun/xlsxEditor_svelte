@@ -18,5 +18,5 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  @apply bg-slate-100/75;
 }
