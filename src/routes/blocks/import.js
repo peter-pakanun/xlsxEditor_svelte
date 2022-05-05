@@ -69,6 +69,7 @@ export async function post({ request, locals }) {
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
           if (!oldOriginal) {
+            console.log(oldOriginal);
             // this is a new field
             sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           }
