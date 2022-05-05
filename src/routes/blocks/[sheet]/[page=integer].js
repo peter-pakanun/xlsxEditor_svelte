@@ -24,7 +24,7 @@ export async function get({ params, locals }) {
   let blocks = await Blocks.find({ sheet }).skip(page * pageSize).limit(pageSize).toArray().catch(() => { console.error('error'); });
   if (!Array.isArray(blocks)) {
     return {
-      status: 404,
+      status: 500,
     };
   }
 
