@@ -74,7 +74,7 @@ export async function post({ request, locals }) {
           }
         }
 
-        if (oldTranslation !== newTValue) {
+        if (oldTranslation !== newTranslation) {
           // we found a change in translated strings
           toUpdate.push({
             id: oldBlock.id,
