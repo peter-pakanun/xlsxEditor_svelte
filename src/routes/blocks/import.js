@@ -68,9 +68,8 @@ export async function post({ request, locals }) {
             aLV: newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
-          if (!oldOriginal) {
-            console.log(oldOriginal);
-            // this is a new field
+          if (!oldOriginal && !newTranslation) {
+            // this is a new field, that has not been translated yet
             sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           }
         }
@@ -127,8 +126,10 @@ export async function post({ request, locals }) {
         $set: {
           [type == 'o' ? 'oStrs.' + field : 'tStrs.' + field]: newValue,
           updatedAt: new Date(),
-          aLV
         },
+        $max: {
+          aLV,
+        }
       };
       updateBulk.find({ id, sheet }).updateOne(updateOperation);
       historyToInsert.push({
