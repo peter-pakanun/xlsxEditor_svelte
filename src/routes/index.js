@@ -25,7 +25,10 @@ export async function get({ params, locals }) {
   let definition = await Definitions.find({ language: user.language }).sort({ version: -1 }).limit(1).toArray();
   if (definition.length <= 0) {
     return {
-      body: {}
+      status: 302,
+      headers: {
+        Location: '/import',
+      },
     };
   }
 
