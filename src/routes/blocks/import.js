@@ -31,8 +31,6 @@ export async function post({ request, locals }) {
         status: 400,
       };
     }
-    // TODO: make sure the sheet is valid
-    // TODO: make sure block id is a unique index
   }
 
   const client = await clientPromise;
@@ -76,7 +74,6 @@ export async function post({ request, locals }) {
           });
         }
       }
-      // TODO: check and update tlNote too
     }
   }
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
