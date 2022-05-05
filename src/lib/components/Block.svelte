@@ -10,11 +10,12 @@
     tStrs: {
       field_1: "value"
     },
-    hasChanged: false,
+    aLV: 0,
     tlNote: "TLNote",
   };
 
-  let colorClass = block?.hasChanged ? "bg-orange-300" : "bg-blue-300";
+  let colorClass;
+  $: colorClass = block.aLV >= 2 ? 'bg-red-300' : block.aLV >= 1 ? 'bg-orange-300' : 'bg-blue-300', console.log(block);
   
   onMount(() => {
     // check if there's a missing translation
