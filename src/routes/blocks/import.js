@@ -38,6 +38,8 @@ export async function post({ request, locals }) {
   const Histories = client.db().collection(language + '_histories');
 
   let sheetAttentionLevel = 0;
+
+  // get old blocks, if any
   let ids = newBlocks.map(block => block.id).filter(id => id);
   let oldBlocks = await Blocks.find({ sheet, id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
   
@@ -46,39 +48,42 @@ export async function post({ request, locals }) {
     // we found some old blocks
     for (let oldBlock of oldBlocks) {
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
+
+      // check every fields
       for (const field in newBlock.oStrs) { // they share the same fields
-        let oldOValue = oldBlock.oStrs?.[field];
-        let newOValue = newBlock.oStrs?.[field];
-        let oldTValue = oldBlock.tStrs?.[field];
-        let newTValue = newBlock.tStrs?.[field];
-        if (oldOValue !== newOValue) {
+        let oldOriginal = oldBlock.oStrs?.[field];
+        let newOriginal = newBlock.oStrs?.[field];
+        let oldTranslation = oldBlock.tStrs?.[field];
+        let newTranslation = newBlock.tStrs?.[field];
+
+        if (oldOriginal !== newOriginal) {
           // we found a change in original strings
           toUpdate.push({
             id: oldBlock.id,
             field,
-            type: "o", // mean original
-            oldValue: oldOValue,
-            newValue: newOValue,
+            type: "o",
+            oldValue: oldOriginal,
+            newValue: newOriginal,
             lastUpdated: oldBlock.updatedAt,
-            setAttentionLevel: oldTValue ? 1 : 2, // if we alreadt has a translation, we set attention level to 1, otherwise to 2
+            aLV: oldTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
-          if (oldOValue === null) {
+          if (!oldOriginal) {
             // this is a new field
             sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           }
         }
-        if (oldTValue !== newTValue) {
+
+        if (oldTranslation !== newTValue) {
           // we found a change in translated strings
           toUpdate.push({
             id: oldBlock.id,
             field,
-            type: "t", // mean translated
-            oldTValue,
-            newTValue,
+            type: "t",
+            oldValue: oldTranslation,
+            newValue: newTranslation,
             lastUpdated: oldBlock.updatedAt,
           });
-          sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
         }
       }
     }
@@ -86,18 +91,22 @@ export async function post({ request, locals }) {
   
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
   if (toInsert.length) {
-    for (let block of toInsert) {
+    for (let block of toInsert) { // theses are new blocks only
       block.updatedAt = new Date();
       block.sheet = sheet;
+
       // only set attention level to 2 if this new block has no translation strings
+      // because if we already has a translation, in a *new* block, that mean the file is already translated beforehand
       for (const field in block.oStrs) {
-        if (block.tStrs?.[field] === null) {
+        if (!block.tStrs?.[field]) {
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           block.aLV = 2;
           break;
         }
       }
     }
+
+    // now we can insert new blocks
     try {
       await Blocks.insertMany(toInsert);
     } catch (e) {
@@ -112,12 +121,12 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { id, field, type, oldValue, newValue, lastUpdated, setAttentionLevel } = update;
+      let { id, field, type, oldValue, newValue, lastUpdated, aLV } = update;
       let updateOperation = {
         $set: {
           [type == 'o' ? 'oStrs.' + field : 'tStrs.' + field]: newValue,
           updatedAt: new Date(),
-          aLV: setAttentionLevel
+          aLV
         },
       };
       updateBulk.find({ id, sheet }).updateOne(updateOperation);
@@ -126,14 +135,16 @@ export async function post({ request, locals }) {
         sheet,
         field,
         type,
-        oldValue,
+        oldValue, // only store old value, we can get the new value from the working collection
         updateBy: user._id,
         lastUpdated,
       });
     }
     try {
-      await updateBulk.execute();
-      await Histories.insertMany(historyToInsert);
+      await Promise.all([
+        updateBulk.execute(),
+        Histories.insertMany(historyToInsert),
+      ]);
     } catch (e) {
       console.error(e);
       return {
