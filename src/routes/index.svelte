@@ -1,6 +1,7 @@
 <script>
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import Block from '$lib/components/Block.svelte';
 
   export let blocks = [];
   export let definition;
@@ -41,7 +42,7 @@
 
 <div class="flex gap-4 m-2">
   <div>
-    <div class="flex flex-col overflow-y-auto rounded shadow-md bg-slate-50 max-h-96">
+    <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-50 max-h-96">
       {#each definition.sheets as sheet}
         {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-red-300' : sheet.attentionLevel >= 1 ? 'bg-orange-300' : ''}
         <div>
@@ -54,53 +55,12 @@
       {/each}
     </div>
   </div>
-  <div class="flex-1">
+
+  <div class="flex-1 space-y-2">
     {#if blocks.length}
-    <div class="flex flex-col space-y-2">
-
       {#each blocks as block}
-      <div class="flex shadow bg-slate-50">
-        <div class="w-1 bg-green-200"></div>
-        <div class="flex-1 px-3 py-1">
-          <h1 class="underline">{block.id}</h1>
-          {#each activeSheetFields as field}
-          <h2 class="mb-1 text-xs">{field}</h2>
-          <div class="flex gap-2 px-2 text-xs">
-            <div class="flex-1">
-              <textarea bind:value={block.oStrs[field]} class="w-full p-2 m-1 text-gray-600 rounded shadow-inner outline-none bg-slate-200" readonly></textarea>
-            </div>
-            <div class="flex-1">
-              <textarea bind:value={block.tStrs[field]} class="w-full p-2 m-1 rounded shadow-inner outline-none"></textarea>
-            </div>
-          </div>
-          {/each}
-        </div>
-        
-      </div>
+        <Block {block} fields={activeSheetFields} />
       {/each}
-      
-    </div>
-
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th>ID</th>
-          {#each activeSheetFields as field}
-            <th>{field}</th>
-          {/each}
-        </tr>
-      </thead>
-      <tbody>
-        {#each blocks as block}
-          <tr>
-            <td>{block.id}</td>
-            {#each activeSheetFields as field}
-              <td>{block.oStrs[field]}</td>
-            {/each}
-          </tr>
-        {/each}
-      </tbody>
-    </table>
     {/if}
   </div>
 </div>
