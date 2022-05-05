@@ -89,8 +89,8 @@ export async function post({ request, locals }) {
     for (let block of toInsert) {
       block.updatedAt = new Date();
       block.sheet = sheet;
-      // check if we have a translation for this block
-      for (const field in toInsert.oStrs) { // they share the same fields
+      // only set attention level to 2 if this new block has no translation strings
+      for (const field in toInsert.oStrs) {
         let newTValue = toInsert.tStrs?.[field];
         if (newTValue === null) {
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
