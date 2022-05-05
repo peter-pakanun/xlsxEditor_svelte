@@ -11,7 +11,7 @@
   }
 </script>
 
-<div class="flex gap-4 m-2 mt-24">
+<div class="flex gap-4 m-2">
   <div class="rounded shadow bg-slate-50">
     <div class="flex flex-col overflow-y-auto shadow-inner max-h-96">
       {#each definition.sheets as sheet}
