@@ -29,7 +29,7 @@
 		</div>
 
 		<div class="px-2 pt-1">
-			{#if block.tlNote}<div class="py-1">Translation note: {block.tlNote}</div>{/if}
+			{#if block.tlNote}<div class="py-1 italic text-slate-500">Translation Note: {block.tlNote}</div>{/if}
 
 			{#each fields as field}
 				{#if block.oStrs[field]}
