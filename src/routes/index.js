@@ -4,7 +4,10 @@ export async function get({ params, locals }) {
   let { user } = locals;
   if (!user) {
     return {
-      body: {}
+      status: 301,
+      headers: {
+        Location: '/users/login',
+      },
     };
   }
 
