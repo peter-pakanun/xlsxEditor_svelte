@@ -37,6 +37,7 @@ export async function post({ request, locals }) {
   const Blocks = client.db().collection(language + '_blocks');
   const Histories = client.db().collection(language + '_histories');
 
+  let sheetAttentionLevel = 0;
   let ids = newBlocks.map(block => block.id).filter(id => id);
   let oldBlocks = await Blocks.find({ sheet, id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
   
@@ -57,6 +58,7 @@ export async function post({ request, locals }) {
             newValue,
             lastUpdated: oldBlock.updatedAt,
           });
+          sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
         }
       }
       for (const field in newBlock.tStrs) {
@@ -72,11 +74,16 @@ export async function post({ request, locals }) {
             newValue,
             lastUpdated: oldBlock.updatedAt,
           });
+          sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
         }
       }
     }
   }
+  
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
+  if (toInsert.length) {
+    sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
+  }
 
   if (toInsert.length) {
     for (let block of toInsert) {
@@ -125,6 +132,30 @@ export async function post({ request, locals }) {
         status: 500,
       };
     }
+  }
+
+  // update sheet definition attention level
+  const Definitions = client.db().collection('definitions');
+  let definition = await Definitions.find({ language }).sort({ version: -1 }).limit(1).toArray();
+  if (definition.length <= 0) {
+    return {
+      status: 404,
+    };
+  }
+  definition = definition[0];
+  let sheetDefinitionIndex = definition.sheets.findIndex(s => s.name === sheet);
+  if (sheetDefinitionIndex < 0) {
+    return {
+      status: 404,
+    };
+  }
+  try {
+    await Definitions.updateOne({ _id: definition._id }, { $max: { [ 'sheets.' + sheetDefinitionIndex + '.attentionLevel' ]: sheetAttentionLevel } });
+  } catch (e) {
+    console.error(e);
+    return {
+      status: 500,
+    };
   }
 
   return {
