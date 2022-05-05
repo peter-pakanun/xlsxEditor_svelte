@@ -43,38 +43,39 @@ export async function post({ request, locals }) {
   
   let toUpdate = [];
   if (oldBlocks.length) {
+    // we found some old blocks
     for (let oldBlock of oldBlocks) {
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
-      for (const field in newBlock.oStrs) {
-        let oldValue = oldBlock.oStrs?.[field];
-        let newValue = newBlock.oStrs?.[field];
-        if (oldValue !== newValue) {
-          //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
+      for (const field in newBlock.oStrs) { // they share the same fields
+        let oldOValue = oldBlock.oStrs?.[field];
+        let newOValue = newBlock.oStrs?.[field];
+        let oldTValue = oldBlock.tStrs?.[field];
+        let newTValue = newBlock.tStrs?.[field];
+        if (oldOValue !== newOValue) {
+          // we found a change in original strings
           toUpdate.push({
             id: oldBlock.id,
             field,
             type: "o", // mean original
-            oldValue,
-            newValue,
+            oldValue: oldOValue,
+            newValue: newOValue,
             lastUpdated: oldBlock.updatedAt,
+            setAttentionLevel: oldTValue ? 1 : 2, // if we alreadt has a translation, we set attention level to 1, otherwise to 2
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
-          if (oldValue === null) {
+          if (oldOValue === null) {
+            // this is a new field
             sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           }
         }
-      }
-      for (const field in newBlock.tStrs) {
-        let oldValue = oldBlock.tStrs?.[field];
-        let newValue = newBlock.tStrs?.[field];
-        if (oldValue !== newValue) {
-          //console.log(`"${oldBlock.id}" "${field}" "${oldValue}" !== "${newValue}"`);
+        if (oldTValue !== newTValue) {
+          // we found a change in translated strings
           toUpdate.push({
             id: oldBlock.id,
             field,
             type: "t", // mean translated
-            oldValue,
-            newValue,
+            oldTValue,
+            newTValue,
             lastUpdated: oldBlock.updatedAt,
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
@@ -107,12 +108,12 @@ export async function post({ request, locals }) {
     let updateBulk = Blocks.initializeUnorderedBulkOp();
     let historyToInsert = [];
     for (let update of toUpdate) {
-      let { id, field, type, oldValue, newValue, lastUpdated } = update;
+      let { id, field, type, oldValue, newValue, lastUpdated, setAttentionLevel } = update;
       let updateOperation = {
         $set: {
           [type == 'o' ? 'oStrs.' + field : 'tStrs.' + field]: newValue,
           updatedAt: new Date(),
-          hasChanged: true,
+          aLV: setAttentionLevel
         },
       };
       updateBulk.find({ id, sheet }).updateOne(updateOperation);
