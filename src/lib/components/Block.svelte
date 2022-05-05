@@ -15,7 +15,7 @@
   };
 
   let colorClass;
-  $: colorClass = block.aLV >= 2 ? 'bg-red-300' : block.aLV >= 1 ? 'bg-orange-300' : 'bg-blue-300', console.log(block);
+  $: colorClass = block.aLV >= 2 ? 'bg-red-300' : block.aLV >= 1 ? 'bg-orange-300' : 'bg-blue-300';
   
   onMount(() => {
     // check if there's a missing translation
