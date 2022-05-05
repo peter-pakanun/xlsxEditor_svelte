@@ -16,15 +16,7 @@
 
   let colorClass;
   $: colorClass = block.aLV >= 2 ? 'bg-red-300' : block.aLV >= 1 ? 'bg-orange-300' : 'bg-blue-300';
-  
-  onMount(() => {
-    // check if there's a missing translation
-    fields.forEach(field => {
-      if (block.oStrs[field] && !block.tStrs[field]) {
-        colorClass = "bg-red-300";
-      }
-    });
-  });
+  let editing = false;
 </script>
 
 
@@ -48,7 +40,7 @@
           <!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded shadow-sm outline-none pointer-events-none">{block.oStrs[field]}</div> -->
         </div>
         <div class="flex-1">
-          <textarea bind:value={block.tStrs[field]} class="w-full h-20 p-1 bg-white rounded shadow-sm outline-none resize-none"></textarea>
+          <textarea bind:value={block.tStrs[field]} on:input={() => editing = true} class="w-full h-20 p-1 bg-white rounded shadow-sm outline-none resize-none {editing?'ring-2 ring-purple-200 bg-purple-50': ''}"></textarea>
         </div>
       </div>
       {/if}
