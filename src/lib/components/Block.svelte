@@ -10,7 +10,8 @@
     tStrs: {
       field_1: "value"
     },
-    hasChanged: false
+    hasChanged: false,
+    tlNote: "TLNote",
   };
 
   let colorClass = block?.hasChanged ? "bg-orange-300" : "bg-blue-300";
@@ -35,6 +36,8 @@
     </div>
 
     <div class="px-2 pt-1">
+      {#if block.tlNote}<div class="py-1 text-gray-600">Translation note: {block.tlNote}</div>{/if}
+      
       {#each fields as field}
       {#if block.oStrs[field]}
       <h2 class="mb-1">{field}</h2>
