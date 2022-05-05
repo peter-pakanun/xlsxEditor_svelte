@@ -5,7 +5,20 @@
 
   export let blocks = [];
   export let definition;
-  definition.sheets.sort((a, b) => b.attentionLevel - a.attentionLevel);
+  
+  let lv2Sheets = [];
+  for (let sheet of definition.sheets) {
+    if (sheet.attentionLevel == 2) {
+      lv2Sheets.push(sheet);
+    }
+  }
+  
+  let lv1Sheets = [];
+  for (let sheet of definition.sheets) {
+    if (sheet.attentionLevel == 1) {
+      lv1Sheets.push(sheet);
+    }
+  }
 
   onMount(() => {
     setActiveSheet(definition.sheets[0].name);
@@ -18,6 +31,8 @@
       sheet.active = sheet.name === sheetname;
     });
     definition.sheets = definition.sheets;
+    lv2Sheets = lv2Sheets;
+    lv1Sheets = lv1Sheets;
     activeSheet = sheetname;
     activeSheetFields = definition.sheets.find(sheet => sheet.name === sheetname).fields;
 
@@ -32,7 +47,6 @@
     if (response.ok) {
       const json = await response.json();
       blocks = json;
-      console.log(blocks);
     } else {
       console.log('error');
       alert('error');
@@ -43,6 +57,30 @@
 <div class="flex gap-4 m-2 mx-auto max-w-7xl">
   <div>
     <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-50 max-h-96">
+      {#if lv2Sheets.length}
+        <h1 class="px-2 text-sm text-white bg-red-300">New Entires</h1>
+        {#each lv2Sheets as sheet}
+          <div>
+            <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
+            <div class="flex transition-all duration-75 border-b cursor-pointer group peer-checked:bg-blue-100 hover:bg-blue-100">
+              <div class="w-1 mr-1 bg-red-300 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
+              <div class="flex-1 px-4 py-2" on:click={setActiveSheet(sheet.name)}>{sheet.name}</div>
+            </div>
+          </div>
+        {/each}
+      {/if}
+      {#if lv1Sheets.length}
+        <h1 class="px-2 text-sm text-white bg-orange-300">Changed Entires</h1>
+        {#each lv1Sheets as sheet}
+          <div>
+            <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
+            <div class="flex transition-all duration-75 border-b cursor-pointer group peer-checked:bg-blue-100 hover:bg-blue-100">
+              <div class="w-1 mr-1 bg-orange-300 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
+              <div class="flex-1 px-4 py-2" on:click={setActiveSheet(sheet.name)}>{sheet.name}</div>
+            </div>
+          </div>
+        {/each}
+      {/if}
       {#each definition.sheets as sheet}
         {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-red-300' : sheet.attentionLevel >= 1 ? 'bg-orange-300' : ''}
         <div>
