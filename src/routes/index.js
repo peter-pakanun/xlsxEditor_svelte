@@ -10,6 +10,14 @@ export async function get({ params, locals }) {
       },
     };
   }
+  if (!user.language) {
+    return {
+      status: 302,
+      headers: {
+        Location: '/users/wait',
+      },
+    };
+  }
 
   const client = await clientPromise;
   const Definitions = client.db().collection('definitions');
