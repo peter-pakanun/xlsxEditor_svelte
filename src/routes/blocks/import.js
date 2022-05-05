@@ -112,6 +112,7 @@ export async function post({ request, locals }) {
         field,
         type,
         oldValue,
+        updateBy: user._id,
         lastUpdated,
       });
     }
