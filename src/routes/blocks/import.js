@@ -59,6 +59,9 @@ export async function post({ request, locals }) {
             lastUpdated: oldBlock.updatedAt,
           });
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
+          if (oldValue === null) {
+            sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
+          }
         }
       }
       for (const field in newBlock.tStrs) {
