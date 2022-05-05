@@ -60,7 +60,7 @@
   }
 </script>
 
-<div class="p-4 space-y-5 rounded shadow bg-gray-50">
+<div class="p-4 mx-auto mt-4 space-y-5 rounded shadow bg-gray-50 max-w-7xl">
 	<div class="flex gap-4">
 		<div class="rounded-md w-60 h-60">
 			<img class="object-cover rounded-md" src={user.avatar} alt="" />

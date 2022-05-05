@@ -64,6 +64,4 @@
   </nav>
 </div>
 
-<div class="p-4 mx-auto max-w-7xl">
-  <slot />
-</div>
+<slot />

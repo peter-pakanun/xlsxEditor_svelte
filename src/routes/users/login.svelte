@@ -42,7 +42,7 @@
 	<title>Login</title>
 </svelte:head>
 
-<form on:submit|preventDefault={submit} class="p-4 space-y-5 rounded shadow bg-gray-50">
+<form on:submit|preventDefault={submit} class="p-4 mx-auto mt-4 space-y-5 rounded shadow bg-gray-50 max-w-7xl">
 	<h1>Login</h1>
 	<Input
 		label="Username"
