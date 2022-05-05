@@ -38,7 +38,7 @@
 <div class="px-6 py-2 text-white bg-indigo-600">
   <nav class="flex items-center justify-between h-16 px-4 mx-auto text-lg max-w-7xl">
     <div class="flex items-center gap-4">
-      <a href="/" class="">Home</a>
+      <a href="/" class="">SheetEditor</a>
     </div>
     <div class="flex items-center gap-4">
       {#if user.username}

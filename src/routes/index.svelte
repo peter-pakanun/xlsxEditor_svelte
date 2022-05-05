@@ -40,7 +40,7 @@
   }
 </script>
 
-<div class="flex gap-4 m-2">
+<div class="flex gap-4 m-2 mx-auto max-w-7xl">
   <div>
     <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-50 max-h-96">
       {#each definition.sheets as sheet}
