@@ -81,13 +81,19 @@ export async function post({ request, locals }) {
   }
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
 
-  let promises = [];
   if (toInsert.length) {
     for (let block of toInsert) {
       block.updatedAt = new Date();
       block.sheet = sheet;
     }
-    promises.push(Blocks.insertMany(toInsert));
+    try {
+      await Blocks.insertMany(toInsert);
+    } catch (e) {
+      console.error(e);
+      return {
+        status: 500,
+      };
+    }
   }
 
   if (toUpdate.length) {
@@ -112,17 +118,15 @@ export async function post({ request, locals }) {
         lastUpdated,
       });
     }
-    promises.push(updateBulk.execute());
-    promises.push(Histories.insertMany(historyToInsert));
-  }
-
-  try {
-    await Promise.all(promises);
-  } catch (err) {
-    console.error(err);
-    return {
-      status: 500,
-    };
+    try {
+      await updateBulk.execute();
+      await Histories.insertMany(historyToInsert);
+    } catch (e) {
+      console.error(e);
+      return {
+        status: 500,
+      };
+    }
   }
 
   return {
