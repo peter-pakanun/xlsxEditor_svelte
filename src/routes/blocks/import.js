@@ -86,14 +86,18 @@ export async function post({ request, locals }) {
   
   let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
   if (toInsert.length) {
-    sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
-  }
-
-  if (toInsert.length) {
     for (let block of toInsert) {
       block.updatedAt = new Date();
       block.sheet = sheet;
-      block.aLV = 2;
+      // check if we have a translation for this block
+      for (const field in toInsert.oStrs) { // they share the same fields
+        let newTValue = toInsert.tStrs?.[field];
+        if (newTValue === null) {
+          sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
+          block.aLV = 2;
+          break;
+        }
+      }
     }
     try {
       await Blocks.insertMany(toInsert);
