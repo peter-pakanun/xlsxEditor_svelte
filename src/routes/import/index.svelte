@@ -265,9 +265,9 @@
         blocks.push(block);
       }
 
-      // Upload in chunks of 200
+      // Upload in chunks of 500
       let chunks = [];
-      let chunkMaxSize = 200;
+      let chunkMaxSize = 500;
       let blocksToImport = blocks.length;
       let blocksImported = 0;
       logger.log(`[${sheetIndex}/${sheetCount}][${name}] 0 of ${blocksToImport.toLocaleString()} blocks uploading...`);
