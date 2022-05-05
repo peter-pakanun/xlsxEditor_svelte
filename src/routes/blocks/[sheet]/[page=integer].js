@@ -22,7 +22,7 @@ export async function get({ params, locals }) {
   const Histories = client.db().collection(user.language + '_histories');
 
   let blocks = await Blocks.find({ sheet }).skip(page * pageSize).limit(pageSize).toArray().catch(() => { console.error('error'); });
-  if (!blocks || !blocks.length) {
+  if (!Array.isArray(blocks)) {
     return {
       status: 404,
     };
