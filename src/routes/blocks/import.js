@@ -90,9 +90,8 @@ export async function post({ request, locals }) {
       block.updatedAt = new Date();
       block.sheet = sheet;
       // only set attention level to 2 if this new block has no translation strings
-      for (const field in toInsert.oStrs) {
-        let newTValue = toInsert.tStrs?.[field];
-        if (newTValue === null) {
+      for (const field in block.oStrs) {
+        if (block.tStrs?.[field] === null) {
           sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
           block.aLV = 2;
           break;
