@@ -309,7 +309,7 @@
   }
 </script>
 
-<div class="space-y-4 p-4 mx-auto max-w-7xl">
+<div class="p-4 mx-auto space-y-4 max-w-7xl">
   {#if !importingData}
 	  <FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
   {/if}
