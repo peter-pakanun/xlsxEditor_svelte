@@ -275,7 +275,7 @@
         }
         blocks.push(block);
       }
-      continue;
+
       // Upload in chunks of 500
       let chunks = [];
       let chunkMaxSize = 500;
