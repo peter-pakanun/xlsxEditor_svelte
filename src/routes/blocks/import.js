@@ -38,23 +38,23 @@ export async function post({ request, locals }) {
   const Histories = client.db().collection(language + '_histories');
 
   let sheetAttentionLevel = 0;
+  let toUpdate = [];
+  let toInsert = [];
 
-  // get old blocks, if any
+  // get old blocks
   let ids = newBlocks.map(block => block.id).filter(id => id);
   let oldBlocks = await Blocks.find({ sheet, id: { $in: ids } }).toArray().catch(() => { console.error('error'); });
-  
-  let toUpdate = [];
   if (oldBlocks.length) {
     // we found some old blocks
     for (let oldBlock of oldBlocks) {
-      let newBlock = newBlocks.find(block => block.id === oldBlock.id);
+      let newBlock = newBlocks.find(block => block.id === oldBlock.id); // will always exist, cause we use the ids to find them
       if (newBlock.forceAttentionLevel) sheetAttentionLevel = newBlock.forceAttentionLevel;
 
       // check every fields
       for (const field in newBlock.oStrs) { // they share the same fields
         let oldOriginal = oldBlock.oStrs?.[field];
-        let newOriginal = newBlock.oStrs?.[field];
         let oldTranslation = oldBlock.tStrs?.[field];
+        let newOriginal = newBlock.oStrs?.[field];
         let newTranslation = newBlock.tStrs?.[field];
 
         if (oldOriginal !== newOriginal) {
@@ -66,7 +66,8 @@ export async function post({ request, locals }) {
             oldValue: oldOriginal,
             newValue: newOriginal,
             lastUpdated: oldBlock.updatedAt,
-            aLV: newBlock.forceAttentionLevel ?? newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
+            aLV: newBlock.forceAttentionLevel ??
+              newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
           });
           sheetAttentionLevel = newBlock.forceAttentionLevel ?? Math.max(sheetAttentionLevel, 1);
           if (!oldOriginal && !newTranslation) {
@@ -90,7 +91,7 @@ export async function post({ request, locals }) {
     }
   }
   
-  let toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
+  toInsert = newBlocks.filter(block => !oldBlocks.find(oldBlock => oldBlock.id === block.id));
   if (toInsert.length) {
     for (let block of toInsert) { // theses are new blocks only
       block.updatedAt = new Date();
