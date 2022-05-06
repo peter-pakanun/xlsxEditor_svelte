@@ -65,12 +65,12 @@ export async function post({ request, locals }) {
             oldValue: oldOriginal,
             newValue: newOriginal,
             lastUpdated: oldBlock.updatedAt,
-            aLV: newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
+            aLV: newBlock.forceAttentionLevel ?? newTranslation ? 1 : 2, // if we already has a translation, we set attention level to 1, otherwise to 2
           });
-          sheetAttentionLevel = Math.max(sheetAttentionLevel, 1);
+          sheetAttentionLevel = newBlock.forceAttentionLevel ?? Math.max(sheetAttentionLevel, 1);
           if (!oldOriginal && !newTranslation) {
             // this is a new field, that has not been translated yet
-            sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
+            sheetAttentionLevel = newBlock.forceAttentionLevel ?? Math.max(sheetAttentionLevel, 2);
           }
         }
 
@@ -99,7 +99,7 @@ export async function post({ request, locals }) {
       // because if we already has a translation, in a *new* block, that mean the file is already translated beforehand
       for (const field in block.oStrs) {
         if (!block.tStrs?.[field]) {
-          sheetAttentionLevel = Math.max(sheetAttentionLevel, 2);
+          sheetAttentionLevel = block.forceAttentionLevel ?? Math.max(sheetAttentionLevel, 2);
           block.aLV = 2;
           break;
         }
