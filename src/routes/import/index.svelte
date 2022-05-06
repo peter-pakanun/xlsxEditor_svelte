@@ -30,6 +30,11 @@
 	export let user;
 	export let lastDefinition;
 
+  const cellColorMap = {
+    'FF9966': 1,
+    'FA8072': 2,
+  };
+
   let logger;
 	let files;
 	let workbook;
@@ -45,12 +50,14 @@
 	async function handleFileChange() {
 		if (!files.length) return;
     logger.log('Reading file, please wait...');
-		workbook = await read(await files[0].arrayBuffer(), { type: 'array' });
+		workbook = await read(await files[0].arrayBuffer(), {
+      type: 'array',
+      cellStyles: true
+    });
     if (!workbook.SheetNames) {
       logger.log('No sheets found in file.');
       return;
     }
-		console.log(workbook);
 
     logger.log('Sheets loaded!');
     logger.log('Comparing definitions...');
@@ -188,7 +195,6 @@
     removedSheets = removedSheets;
 
     logger.log('Definition loaded!');
-    console.log(definition);
 	}
 
   let uploadingDefinition = false;
@@ -261,10 +267,15 @@
           });
           let tValue = worksheet[tCell]?.v;
           if (tValue) block.tStrs[field] = tValue;
+          let tCellColor = worksheet[tCell]?.s?.fgColor?.rgb;
+          let tCellIndicator = cellColorMap[tCellColor];
+          if (tCellIndicator) {
+            block.forceAttentionLevel = tCellIndicator;
+          }
         }
         blocks.push(block);
       }
-
+      continue;
       // Upload in chunks of 500
       let chunks = [];
       let chunkMaxSize = 500;
@@ -300,6 +311,7 @@
         }
       }
     }
+    return;
 
     logger.log('Upload completed!');
     logger.log(`Total ${importedCount} blocks!`);
@@ -314,26 +326,26 @@
 	  <FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
   {/if}
 
-  <div class="p-4 space-y-5 rounded shadow bg-slate-50">
+  <div class="p-4 space-y-5 rounded shadow bg-slate-800 text-slate-400">
     <Logger bind:this={logger} />
 
     {#if newSheets.length || updatedSheets.length || removedSheets.length}
-      <div class="flex gap-2 text-gray-700">
+      <div class="flex gap-2">
         <div class="flex-1 space-y-2">
-          <h1 class="text-xl font-bold">Updated Sheets</h1>
-          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
+          <h1 class="text-xl font-bold text-slate-200">Updated Sheets</h1>
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-900/25">
             {#each updatedSheets as sheet}
               <div>
-                <div class="font-bold">{sheet.name}</div>
+                <div class="font-bold text-slate-200">{sheet.name}</div>
                 <div class="flex gap-2 text-sm">
                   <div class="flex-1 space-y-1">
                     {#each sheet.oldFields as fieldObj}
-                      <div class="pl-3 {fieldObj.removed ? 'text-red-700 line-through' : ''}">{fieldObj.name}</div>
+                      <div class="pl-3 {fieldObj.removed ? 'text-red-400/75 line-through' : ''}">{fieldObj.name}</div>
                     {/each}
                   </div>
                   <div class="flex-1 space-y-1">
                     {#each sheet.newFields as fieldObj}
-                      <div class="pl-3 {fieldObj.added ? 'text-green-700 underline' : ''}">{fieldObj.name}</div>
+                      <div class="pl-3 {fieldObj.added ? 'text-green-400/75 underline' : ''}">{fieldObj.name}</div>
                     {/each}
                   </div>
                 </div>
@@ -343,15 +355,15 @@
         </div>
 
         <div class="flex-1 space-y-2">
-          <h1 class="text-xl font-bold">New Sheets</h1>
-          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
+          <h1 class="text-xl font-bold text-slate-200">New Sheets</h1>
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-900/25">
             {#each newSheets as sheet}
               <div>
-                <div class="font-bold">{sheet.name}</div>
+                <div class="font-bold text-slate-200">{sheet.name}</div>
                 <div class="flex gap-2 text-sm">
                   <div class="flex-1 space-y-1">
                     {#each sheet.fields as field}
-                      <div class="pl-3 text-green-700 underline">{field}</div>
+                      <div class="pl-3 text-green-400/75 underline">{field}</div>
                     {/each}
                   </div>
                 </div>
@@ -361,15 +373,15 @@
         </div>
 
         <div class="flex-1 space-y-2">
-          <h1 class="text-xl font-bold">Removed Sheets</h1>
-          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-100">
+          <h1 class="text-xl font-bold text-slate-200">Removed Sheets</h1>
+          <div class="h-64 p-2 space-y-2 overflow-y-scroll rounded-md shadow-inner bg-slate-900/25">
             {#each removedSheets as sheet}
               <div>
-                <div class="font-bold text-red-700 line-through">{sheet.name}</div>
+                <div class="font-bold text-red-500/75 line-through">{sheet.name}</div>
                 <div class="flex gap-2 text-sm">
                   <div class="flex-1 space-y-1">
                     {#each sheet.fields as field}
-                      <div class="pl-3 text-red-700 line-through">{field}</div>
+                      <div class="pl-3 text-red-400/75 line-through">{field}</div>
                     {/each}
                   </div>
                 </div>
@@ -383,12 +395,12 @@
 
       <Button on:click={uploadDefinition} bind:disabled={uploadingDefinition}>Update Definition</Button>
     {:else if definition.sheets.length && !importingData}
-      <h1 class="text-xl font-bold">Definition up to date!</h1>
+      <h1 class="text-xl font-bold text-slate-200">Definition up to date!</h1>
       <Button on:click={beginImport} bind:disabled={importingData}>Begin Import</Button>
     {/if}
 
     {#if importFinished}
-      <h1 class="text-xl font-bold">Import finished!</h1>
+      <h1 class="text-xl font-bold text-slate-200">Import finished!</h1>
       <Button on:click={() => goto('/')}>Begin Edit</Button>
     {/if}
 	</div>

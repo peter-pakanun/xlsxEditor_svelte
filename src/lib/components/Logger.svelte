@@ -17,7 +17,7 @@
   let containerRef;
 </script>
 
-<div class="bg-slate-100 rounded-md px-4 py-2 shadow-inner h-64 text-sm text-gray-700 overflow-y-scroll break-words {classProp}" bind:this={containerRef}>
+<div class="bg-slate-900/25 rounded-md px-4 py-2 shadow-inner h-64 text-sm text-slate-400 overflow-y-scroll break-words {classProp}" bind:this={containerRef}>
   {#each logs as log}
     <div>{log}</div>
   {/each}
