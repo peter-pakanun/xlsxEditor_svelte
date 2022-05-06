@@ -47,8 +47,8 @@ export async function post({ request, locals }) {
   if (oldBlocks.length) {
     // we found some old blocks
     for (let oldBlock of oldBlocks) {
-      if (newBlock.forceAttentionLevel) sheetAttentionLevel = newBlock.forceAttentionLevel;
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
+      if (newBlock.forceAttentionLevel) sheetAttentionLevel = newBlock.forceAttentionLevel;
 
       // check every fields
       for (const field in newBlock.oStrs) { // they share the same fields
@@ -156,28 +156,30 @@ export async function post({ request, locals }) {
     }
   }
 
-  // update sheet definition attention level
-  const Definitions = client.db().collection('definitions');
-  let definition = await Definitions.find({ language }).sort({ version: -1 }).limit(1).toArray();
-  if (definition.length <= 0) {
-    return {
-      status: 404,
-    };
-  }
-  definition = definition[0];
-  let sheetDefinitionIndex = definition.sheets.findIndex(s => s.name === sheet);
-  if (sheetDefinitionIndex < 0) {
-    return {
-      status: 404,
-    };
-  }
-  try {
-    await Definitions.updateOne({ _id: definition._id }, { $max: { [ 'sheets.' + sheetDefinitionIndex + '.attentionLevel' ]: sheetAttentionLevel } });
-  } catch (e) {
-    console.error(e);
-    return {
-      status: 500,
-    };
+  // update sheet definition attention level, but only if there's any change
+  if (toUpdate.length || toInsert.length) {
+    const Definitions = client.db().collection('definitions');
+    let definition = await Definitions.find({ language }).sort({ version: -1 }).limit(1).toArray();
+    if (definition.length <= 0) {
+      return {
+        status: 404,
+      };
+    }
+    definition = definition[0];
+    let sheetDefinitionIndex = definition.sheets.findIndex(s => s.name === sheet);
+    if (sheetDefinitionIndex < 0) {
+      return {
+        status: 404,
+      };
+    }
+    try {
+      await Definitions.updateOne({ _id: definition._id }, { $max: { [ 'sheets.' + sheetDefinitionIndex + '.attentionLevel' ]: sheetAttentionLevel } });
+    } catch (e) {
+      console.error(e);
+      return {
+        status: 500,
+      };
+    }
   }
 
   return {
