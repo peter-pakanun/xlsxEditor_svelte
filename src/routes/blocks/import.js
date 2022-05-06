@@ -47,6 +47,7 @@ export async function post({ request, locals }) {
   if (oldBlocks.length) {
     // we found some old blocks
     for (let oldBlock of oldBlocks) {
+      if (newBlock.forceAttentionLevel) sheetAttentionLevel = newBlock.forceAttentionLevel;
       let newBlock = newBlocks.find(block => block.id === oldBlock.id);
 
       // check every fields

@@ -311,7 +311,6 @@
         }
       }
     }
-    return;
 
     logger.log('Upload completed!');
     logger.log(`Total ${importedCount} blocks!`);
