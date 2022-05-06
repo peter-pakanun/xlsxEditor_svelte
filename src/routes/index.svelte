@@ -64,12 +64,12 @@
   <div>
     <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-800 max-h-96">
       {#if lv2Sheets.length}
-        <h1 class="px-2 text-sm text-white bg-orange-500/75">New Entires</h1>
+        <h1 class="px-2 text-sm text-white bg-red-500/75">New Entires</h1>
         {#each lv2Sheets as sheet}
           <div class="text-slate-200">
             <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
             <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
-              <div class="w-1 mr-1 bg-orange-500/75 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
+              <div class="w-1 mr-1 bg-red-500/75 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
               <div class="flex-1 px-4 py-2" on:click={setActiveSheet(sheet.name)}>{sheet.name}</div>
             </div>
           </div>
