@@ -21,7 +21,13 @@
   }
 
   onMount(() => {
-    setActiveSheet(definition.sheets[0].name);
+    if (lv2Sheets.length > 0) {
+      setActiveSheet(lv2Sheets[0].name);
+    } else if (lv1Sheets.length > 0) {
+      setActiveSheet(lv1Sheets[0].name);
+    } else {
+      setActiveSheet(definition.sheets[0].name);
+    }
   });
 
   let activeSheet;
