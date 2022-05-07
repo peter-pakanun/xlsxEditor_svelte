@@ -18,6 +18,14 @@
 	$: colorClass =
 		block.aLV >= 2 ? 'bg-red-500/75' : block.aLV >= 1 ? 'bg-orange-500/75' : 'bg-slate-700';
 	let editing = false;
+
+	let expaned = false;
+	function focused() {
+		expaned = true;
+	}
+	function blured() {
+		expaned = false;
+	}
 </script>
 
 <div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800">
@@ -39,20 +47,21 @@
 				{#if block.oStrs[field]}
 					<h2 class="mb-1 text-sky-300/50">{field}</h2>
 					<div class="flex gap-1 text-sm">
-						<div class="relative flex-1">
+						<div class="relative flex flex-1 gap-2">
+							<input class="hidden peer" type="checkbox" name="" id="" tabindex="-1" bind:checked={expaned} />
 							<textarea
 								bind:value={block.oStrs[field]}
-								class="w-full h-20 p-1 rounded shadow-inner outline-none resize-none text-slate-400 bg-slate-900/25"
+								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-48 text-slate-400 bg-inherit peer-checked:bg-slate-900/25"
 								readonly
 								tabindex="-1"
 							/>
 							<!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded outline-none pointer-events-none">{block.oStrs[field]}</div> -->
-						</div>
-						<div class="flex-1">
 							<textarea
 								bind:value={block.tStrs[field]}
 								on:input={() => (editing = true)}
-								class="w-full h-20 p-1 rounded outline-none resize-none shadow-inner bg-slate-900/50 text-slate-200 {editing
+								on:focus={focused}
+								on:blur={blured}
+								class="w-full h-8 p-1 peer-checked:h-48 transition-all rounded outline-none resize-none shadow-inner bg-slate-900/25 peer-checked:bg-slate-900/50 text-slate-200 {editing
 									? 'ring-2 ring-purple-800 bg-purple-900/50'
 									: ''}"
 							/>
