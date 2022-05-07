@@ -44,6 +44,7 @@
 								bind:value={block.oStrs[field]}
 								class="w-full h-20 p-1 rounded shadow-inner outline-none resize-none text-slate-400 bg-slate-900/25"
 								readonly
+								tabindex="-1"
 							/>
 							<!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded outline-none pointer-events-none">{block.oStrs[field]}</div> -->
 						</div>
