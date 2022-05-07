@@ -1,13 +1,3 @@
-<script context="module">
-	export async function load({ session }) {
-		return {
-			props: {
-				user: session.user || {},
-			}
-		};
-	}
-</script>
-
 <script>
 	import { goto } from '$app/navigation';
 	import { session } from '$app/stores';

@@ -1,13 +1,3 @@
-<script context="module">
-  export async function load({ session }) {
-    return {
-      props: {
-        user: session.user || {},
-      }
-    };
-  }
-</script>
-
 <script>
   import "../app.css";
   import Avatar from '$lib/components/Avatar.svelte';
