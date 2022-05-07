@@ -20,7 +20,8 @@
 	let editing = false;
 
 	let expaned = false;
-	function focused() {
+	function focused(e) {
+		e.target.select();
 		expaned = true;
 	}
 	function blured() {
@@ -36,7 +37,7 @@
 			{block.id}
 		</div>
 
-		<div class="px-2 pt-1">
+		<div class="px-2 py-1">
 			{#if block.tlNote}
 				<div class="py-1 italic text-slate-500">
 					Translation Note: {block.tlNote}
@@ -61,9 +62,9 @@
 								on:input={() => (editing = true)}
 								on:focus={focused}
 								on:blur={blured}
-								class="w-full h-8 p-1 peer-checked:h-48 transition-all rounded outline-none resize-none shadow-inner bg-slate-900/25 peer-checked:bg-slate-900/50 text-slate-200 {editing
+								class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-48 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
 									? 'ring-2 ring-purple-800 bg-purple-900/50'
-									: ''}"
+									: 'focus:ring-sky-500 focus:ring-2 bg-slate-900/25'}"
 							/>
 						</div>
 					</div>
