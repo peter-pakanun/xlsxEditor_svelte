@@ -19,6 +19,10 @@ MONGODB_URI="mongodb+srv://<username>:<password>@<address>/<database>?retryWrite
 - replace `<address>` with your database's address
 - replace `<database>` with your database name
 
+## Setup Atlas Search
+
+Do one import and create search index named `default`.
+
 ## Developing
 
 ```bash
