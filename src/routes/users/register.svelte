@@ -49,7 +49,7 @@
 </script>
 
 <svelte:head>
-	<title>Register</title>
+  <title>Register - XLSX Editor</title>
 </svelte:head>
 
 <form on:submit|preventDefault={submit} class="p-4 mx-auto mt-4 space-y-5 rounded shadow bg-slate-800 max-w-7xl">

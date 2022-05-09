@@ -11,7 +11,8 @@
 <script>
 	import Input from '$lib/components/Input.svelte';
 	import Button from '$lib/components/Button.svelte';
-  
+  import Avatar from '$lib/components/Avatar.svelte';
+
 	export let user;
 
   let password = '';
@@ -59,6 +60,19 @@
     confirmPassword = '';
   }
 </script>
+
+<svelte:head>
+  <title>My Profile - XLSX Editor</title>
+</svelte:head>
+
+<div class="px-6 py-2 text-white bg-indigo-900/50">
+  <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
+    <div class="flex items-center gap-4">
+      <a href="/" class="">SheetEditor</a>
+    </div>
+    <Avatar />
+  </nav>
+</div>
 
 <div class="p-4 mx-auto mt-4 space-y-5 rounded shadow bg-slate-800 max-w-7xl">
 	<div class="flex gap-4">

@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import Block from '$lib/components/Block.svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
 
   export let blocks = [];
   export let definition;
@@ -59,6 +60,19 @@
     }
   }
 </script>
+
+<svelte:head>
+  <title>XLSX Editor</title>
+</svelte:head>
+
+<div class="px-6 py-2 text-white bg-indigo-900/50">
+  <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
+    <div class="flex items-center gap-4">
+      <a href="/" class="">SheetEditor</a>
+    </div>
+    <Avatar />
+  </nav>
+</div>
 
 <div class="flex gap-4 m-2 mx-auto max-w-7xl">
   <div>

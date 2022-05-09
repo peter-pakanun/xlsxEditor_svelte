@@ -320,6 +320,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Import - XLSX Editor</title>
+</svelte:head>
+
 <div class="p-4 mx-auto space-y-4 max-w-7xl">
   {#if !importingData}
 	  <FileInput on:change={handleFileChange} bind:files accept=".xls,.xlsx" />
