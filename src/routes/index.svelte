@@ -19,6 +19,7 @@
     }
   }
 
+  let sheetsContainerRef = null;
   let sheetRefMaps = {};
   let curSheet = '__all';
   let curQuery = '';
@@ -59,7 +60,7 @@
       await loadBlockPromise;
       fetchingBlocks = false;
       if (sheetRefMaps[sheetname]) {
-        sheetRefMaps[sheetname].scrollIntoView();
+        sheetRefMaps[sheetname].scrollIntoViewIfNeeded();
       }
     }
   }
@@ -196,7 +197,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-800 max-h-96">
+    <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-800 max-h-96" bind:this={sheetsContainerRef}>
       {#if lv2Sheets.length}
         <h1 class="px-2 text-sm text-white bg-red-500">New Entires</h1>
         {#each lv2Sheets as sheet}
