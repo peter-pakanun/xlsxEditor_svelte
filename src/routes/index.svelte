@@ -48,6 +48,7 @@
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
     if (curSheet !== sheetname) {
+      curQuery = searchBoxValue;
       curSheet = sheetname;
       curPage = 0;
       loadBlockPromise = loadBlocks();
