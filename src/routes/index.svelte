@@ -41,7 +41,9 @@
     return json.blocks;
   }
 
-  function setActiveSheet(sheetname) {
+  let loadingSheetData = false;
+  async function setActiveSheet(sheetname) {
+    if (loadingSheetData) return;
     definition.sheets.forEach(sheet => {
       sheet.active = sheet.name === sheetname;
     });
@@ -49,10 +51,13 @@
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
     if (curSheet !== sheetname) {
+      loadingSheetData = true;
       curQuery = searchBoxValue;
       curSheet = sheetname;
       curPage = 0;
       loadBlockPromise = loadBlocks();
+      await loadBlockPromise;
+      loadingSheetData = false;
       if (sheetRefMaps[sheetname]) {
         sheetRefMaps[sheetname].scrollIntoView();
       }
