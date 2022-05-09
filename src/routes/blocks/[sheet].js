@@ -23,7 +23,7 @@ export async function get({ params, locals, url }) {
       status: 400,
     };
   }
-  if (!page || Number.isNaN(page)) {
+  if (!page || isNaN(page)) {
     page = 0;
   }
 
