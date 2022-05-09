@@ -80,7 +80,6 @@
 								{block}
 								{isFirstBlock}
 								{isLastBlock}
-								strType="tStrs"
 								on:pageInc
 							/>
 						</div>
