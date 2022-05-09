@@ -74,7 +74,7 @@ export async function get({ params, locals, url }) {
   return {
     body: {
       pages: searchResults[0].pages,
-      total: searchResults[0].total[0].sheet,
+      total: searchResults[0].total[0]?.sheet ?? 0,
     }
   }
 }
