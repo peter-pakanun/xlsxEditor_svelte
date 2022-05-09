@@ -19,7 +19,6 @@ export async function get({ params, locals }) {
 
   const client = await clientPromise;
   const Blocks = client.db().collection(user.language + '_blocks');
-  const Histories = client.db().collection(user.language + '_histories');
 
   let blocks = await Blocks.find({ sheet }).sort({ aLV: -1 }).skip(page * pageSize).limit(pageSize).toArray().catch(() => { console.error('error'); });
   if (!Array.isArray(blocks)) {
