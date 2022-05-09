@@ -3,14 +3,6 @@
 	const dispatch = createEventDispatcher();
 
   export let value = "";
-  let decodedValue = "";
-  $: {
-    decodedValue = value.replaceAll('\\n', '\n');
-  }
-  function decodedValueChanged(e) {
-    value = decodedValue.replaceAll("\n", "\\n");
-  }
-
   export let fields = [];
   export let fieldId = 0;
   export let isFirstBlock = false;
@@ -64,9 +56,7 @@
 <textarea
   bind:this={inputRef}
 
-  bind:value={decodedValue}
-  on:change={decodedValueChanged}
-  on:input={decodedValueChanged}
+  bind:value={value}
 
   on:input={() => (editing = true)}
 
