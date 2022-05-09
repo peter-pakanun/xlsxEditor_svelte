@@ -44,9 +44,13 @@ export async function get({ params, locals, url }) {
       }
     });
   }
-  if (sheet.toLowerCase() !== 'all') {
+
+  if (sheet.toLowerCase() === '__attention') {
+    agg.push({ $match: { aLV: { $gte: 1 } } });
+  } else if (sheet.toLowerCase() !== '__all') {
     agg.push({ $match: { sheet } });
   }
+
   agg.push(...[
     { $sort: { aLV: -1 } }, // https://stackoverflow.com/a/55491963
     { $facet: {
