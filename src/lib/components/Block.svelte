@@ -37,7 +37,7 @@
 	let expaned = false;
 </script>
 
-<div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800">
+<div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800 group">
 	<div class="w-1 {colorClass}" />
 
 	<div class="flex-1">
@@ -67,7 +67,7 @@
 							/>
 							<textarea
 								bind:value={block.oStrs[field]}
-								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-36 bg-slate-900/25 text-slate-400"
+								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-36 group-hover:h-36 bg-slate-500/25 text-slate-400"
 								readonly
 								tabindex="-1"
 							/>

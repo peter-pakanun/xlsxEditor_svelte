@@ -65,7 +65,7 @@
 
   on:keydown={keydown}
 
-  class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-36 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
+  class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-36 group-hover:h-36 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
     ? 'ring-2 ring-purple-800 bg-purple-900/50'
     : 'focus:ring-sky-500 focus:ring-2 bg-slate-900/25'}"
 />
