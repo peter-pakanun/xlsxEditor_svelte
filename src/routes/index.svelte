@@ -37,7 +37,6 @@
     }
     const json = await response.json();
     curMaxPage = Math.ceil(json.total / json.limit);
-    console.log(json.total, json.limit);
     return json.blocks;
   }
 
