@@ -65,7 +65,7 @@
     }
   }
   async function docKeyDown(e) {
-    if (e.target !== searchRef && (e.ctrlKey || e.metaKey) && e.key === 'f') {
+    if (e.target !== searchRef && (e.key === 'F3' || ((e.ctrlKey || e.metaKey) && e.key === 'f'))) {
       e.preventDefault();
       e.stopPropagation();
       searchRef.focus();
