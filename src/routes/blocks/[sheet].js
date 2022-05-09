@@ -31,13 +31,15 @@ export async function get({ params, locals, url }) {
   const Blocks = client.db().collection(user.language + '_blocks');
 
   let agg = [];
-  if (query.trim()) {
+  if (query) {
     agg.push({
       $search: {
         index: 'default',
         wildcard: {
           query,
-          path: ["id", "sheet", "oStrs", "tStrs"],
+          path: {
+            wildcard: '*',
+          },
           allowAnalyzedField: true
         }
       }
