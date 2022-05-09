@@ -35,11 +35,12 @@ export async function get({ params, locals, url }) {
     agg.push({
       $search: {
         index: 'default',
-        text: {
+        wildcard: {
           query,
           path: {
             wildcard: '*'
-          }
+          },
+          allowAnalyzedField: true
         }
       }
     });
