@@ -37,9 +37,7 @@ export async function get({ params, locals, url }) {
         index: 'default',
         wildcard: {
           query,
-          path: {
-            wildcard: '*'
-          },
+          path: ["id", "sheet", "oStrs", "tStrs"],
           allowAnalyzedField: true
         }
       }
