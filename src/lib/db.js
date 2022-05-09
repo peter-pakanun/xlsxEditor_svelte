@@ -56,6 +56,8 @@ if (!global._defaultDbLoaded) {
       role: 'admin',
     });
   }
+  client.db().collection('definitions').createIndex({ language: 1, version: -1 }, { unique: true });
+  client.db().collection('Test_blocks').createIndex({ aLV: -1 });
   console.log("Loading default data... done");
 }
 
