@@ -53,7 +53,7 @@
     const response = await fetch(`/blocks/${activeSheet}/${curPage}`);
     if (response.ok) {
       const json = await response.json();
-      blocks = json;
+      blocks = json.pages;
     } else {
       console.log('error');
       alert('error');

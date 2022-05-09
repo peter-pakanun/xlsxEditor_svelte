@@ -4,8 +4,8 @@ let pageSize = 20;
 
 export async function get({ params, locals }) {
   let { sheet, page } = params;
-
   let { user } = locals;
+  
   if (!user) {
     return {
       status: 401,
@@ -16,18 +16,57 @@ export async function get({ params, locals }) {
       status: 403,
     };
   }
+  if (!sheet) {
+    return {
+      status: 400,
+    };
+  }
+  if (!page || Number.isNaN(page)) {
+    page = 0;
+  }
 
   const client = await clientPromise;
   const Blocks = client.db().collection(user.language + '_blocks');
 
-  let blocks = await Blocks.find({ sheet }).sort({ aLV: -1 }).skip(page * pageSize).limit(pageSize).toArray().catch(() => { console.error('error'); });
-  if (!Array.isArray(blocks)) {
+  let searchResults = await Blocks.aggregate([
+    {
+      '$match': {
+        'sheet': sheet,
+      }
+    },
+    {
+      '$sort': {
+        aLV: -1,
+      }
+    },
+    {
+      $facet: {
+        'total': [
+          {
+            '$count': 'sheet'
+          }
+        ],
+        'pages': [
+          {
+            '$skip': page * pageSize
+          },
+          {
+            '$limit': pageSize
+          }
+        ],
+      }
+    },
+  ]).toArray().catch((e) => { console.error(e); });
+  if (!Array.isArray(searchResults)) {
     return {
       status: 500,
     };
   }
 
   return {
-    body: blocks,
+    body: {
+      pages: searchResults[0].pages,
+      total: searchResults[0].total[0]?.sheet ?? 0,
+    },
   }
 }
