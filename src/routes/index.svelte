@@ -59,6 +59,22 @@
       alert('error');
     }
   }
+
+  let query;
+  async function searchKeyDown(e) {
+    if (e.key === 'Enter') {
+      if (!query) return;
+      let response = await fetch(`/blocks/search?q=${query}`);
+      if (response.ok) {
+        const json = await response.json();
+        console.log(json); 
+        blocks = json;
+      } else {
+        console.log('error');
+        alert('error');
+      }
+    }
+  }
 </script>
 
 <svelte:head>
@@ -68,9 +84,14 @@
 <div class="px-6 py-2 text-white bg-indigo-900/50">
   <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
     <div class="flex items-center gap-4">
-      <a href="/" class="">SheetEditor</a>
+      <input type="text" class="h-8 px-3 rounded text-slate-200 bg-slate-900/50" placeholder="Search..." bind:value={query} on:keypress={searchKeyDown}>
     </div>
-    <Avatar />
+    <div class="flex items-center">
+      <div>
+        Page {curPage + 1}
+      </div>
+      <Avatar />
+    </div>
   </nav>
 </div>
 
@@ -117,7 +138,7 @@
   <div class="flex-1 space-y-2">
     {#if blocks.length}
       {#each blocks as block}
-        <Block {block} fields={activeSheetFields} />
+        <Block {block} definition={definition} />
       {/each}
     {/if}
   </div>

@@ -41,6 +41,7 @@
 				name="showUserMenu"
 				class="hidden peer"
 				bind:checked={userMenuVisible}
+				tabindex="-1"
 			/>
 			<div
 				class="absolute right-0 z-20 transition origin-top-right -translate-y-5 opacity-0 pointer-events-none peer-checked:pointer-events-auto peer-checked:opacity-100 peer-checked:translate-y-0"
@@ -50,10 +51,10 @@
 					on:click={() => (userMenuVisible = false)}
 				>
 					<li class="px-4 py-2 text-sm hover:bg-gray-100">
-						<a class="block" href="/users/me">My Profile</a>
+						<a class="block" href="/users/me" tabindex="-1">My Profile</a>
 					</li>
 					<li class="px-4 py-2 text-sm hover:bg-gray-100">
-						<a class="block" href="/import">Import</a>
+						<a class="block" href="/import" tabindex="-1">Import</a>
 					</li>
 					<li class="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100" on:click={logout}>
 						Logout

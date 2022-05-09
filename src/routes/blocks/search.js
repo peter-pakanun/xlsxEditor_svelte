@@ -24,7 +24,7 @@ export async function get({ params, locals, url }) {
       '$search': {
         'index': 'default',
         'text': {
-          'query': 'Fire',
+          query,
           'path': {
             'wildcard': '*'
           }
@@ -32,7 +32,12 @@ export async function get({ params, locals, url }) {
       }
     },
     {
-      $limit: 10
+      '$sort': {
+        aLV: -1
+      }
+    },
+    {
+      $limit: 20
     },
   ]).toArray().catch(() => { console.error('error'); });
 

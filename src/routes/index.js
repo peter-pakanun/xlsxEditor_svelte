@@ -22,8 +22,8 @@ export async function get({ params, locals }) {
   const client = await clientPromise;
   const Definitions = client.db().collection('definitions');
 
-  let definition = await Definitions.find({ language: user.language }).sort({ version: -1 }).limit(1).toArray();
-  if (definition.length <= 0) {
+  let definitions = await Definitions.find({ language: user.language }).sort({ version: -1 }).limit(1).toArray();
+  if (definitions.length <= 0) {
     return {
       status: 302,
       headers: {
@@ -34,7 +34,7 @@ export async function get({ params, locals }) {
 
   return {
     body: {
-      definition: definition[0]
+      definition: definitions[0]
     }
   }
 }

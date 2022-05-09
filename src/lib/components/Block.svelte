@@ -1,6 +1,14 @@
 <script>
 	import { onMount } from 'svelte';
-	export let fields = ['field_1'];
+	export let definition = {
+		sheets: [
+			{
+				name: 'sheet_1',
+				fields: ['field_1'],
+				attentionLevel: 1
+			},
+		]
+	};
 	export let block = {
 		id: 'identifier',
 		sheet: 'sheet_name',
@@ -13,6 +21,9 @@
 		aLV: 0,
 		tlNote: 'TLNote'
 	};
+
+	let fields = ['field_1'];
+	$: fields = definition.sheets.find(sheet => sheet.name === block.sheet).fields;
 
 	let colorClass;
 	$: colorClass =
@@ -34,7 +45,7 @@
 
 	<div class="flex-1">
 		<div class="px-2 py-1 text-slate-100 {colorClass}">
-			{block.id}
+			{block.sheet} -> {block.id}
 		</div>
 
 		<div class="px-2 py-1">
