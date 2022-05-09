@@ -237,12 +237,12 @@
 
   <div class="flex-1 space-y-2">
     {#await loadBlockPromise}
-      Loading...
+      <span class="text-2xl">Loading...</span>
     {:then blocks} 
       {#each blocks as block, index}
         <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} />
       {:else}
-        No blocks found.
+        <span class="text-2xl">No results found for query string "<strong>{curQuery}</strong>".</span>
       {/each}
     {:catch error}
       {error}
