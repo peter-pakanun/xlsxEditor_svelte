@@ -23,11 +23,6 @@ export async function get({ params, locals, url }) {
       status: 400,
     };
   }
-  if (!query) {
-    return {
-      status: 400,
-    };
-  }
   if (!page || Number.isNaN(page)) {
     page = 0;
   }
@@ -35,22 +30,25 @@ export async function get({ params, locals, url }) {
   const client = await clientPromise;
   const Blocks = client.db().collection(user.language + '_blocks');
 
-  let agg = [{
-    $search: {
-      index: 'default',
-      text: {
-        query,
-        path: {
-          wildcard: '*'
+  let agg = [];
+  if (query.trim()) {
+    agg.push({
+      $search: {
+        index: 'default',
+        text: {
+          query,
+          path: {
+            wildcard: '*'
+          }
         }
       }
-    }
-  }];
+    });
+  }
   if (sheet.toLowerCase() !== 'all') {
     agg.push({ $match: { sheet } });
   }
   agg.push(...[
-    { $sort: { aLV: -1 } },
+    { $sort: { aLV: -1 } }, // https://stackoverflow.com/a/55491963
     { $facet: {
       total: [
         { $count: 'sheet' }
@@ -72,8 +70,9 @@ export async function get({ params, locals, url }) {
 
   return {
     body: {
-      pages: searchResults[0].pages,
+      blocks: searchResults[0].pages,
       total: searchResults[0].total[0]?.sheet ?? 0,
+      limit: pageSize,
     }
   }
 }

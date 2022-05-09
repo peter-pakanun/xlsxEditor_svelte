@@ -1,10 +1,8 @@
 <script>
-  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
   import Block from '$lib/components/Block.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
 
-  export let blocks = [];
   export let definition;
   
   let lv2Sheets = [];
@@ -21,18 +19,21 @@
     }
   }
 
-  onMount(() => {
-    if (lv2Sheets.length > 0) {
-      setActiveSheet(lv2Sheets[0].name);
-    } else if (lv1Sheets.length > 0) {
-      setActiveSheet(lv1Sheets[0].name);
-    } else {
-      setActiveSheet(definition.sheets[0].name);
+  let curSheet = 'all';
+  let curQuery = '';
+  let curPage = 0;
+  let curMaxPage = 0;
+  let loadBlockPromise = loadBlocks();
+  async function loadBlocks() {
+    const response = await fetch(`/blocks/${curSheet}?q=${curQuery}&page=${curPage}`);
+    if (!response.ok) {
+      throw new Error(response.statusText);
     }
-  });
+    const json = await response.json();
+    curMaxPage = Math.ceil(json.total / json.limit);
+    return json.blocks;
+  }
 
-  let activeSheet;
-  let activeSheetFields;
   function setActiveSheet(sheetname) {
     definition.sheets.forEach(sheet => {
       sheet.active = sheet.name === sheetname;
@@ -40,40 +41,18 @@
     definition.sheets = definition.sheets;
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
-    activeSheet = sheetname;
-    activeSheetFields = definition.sheets.find(sheet => sheet.name === sheetname).fields;
-
+    curSheet = sheetname;
     curPage = 0;
-    loadBlocks();
+    loadBlockPromise = loadBlocks();
   }
 
-  let curPage = 0;
-  async function loadBlocks() {
-    blocks = [];
-    const response = await fetch(`/blocks/${activeSheet}/${curPage}`);
-    if (response.ok) {
-      const json = await response.json();
-      blocks = json.pages;
-    } else {
-      console.log('error');
-      alert('error');
-    }
-  }
-
-  let query;
+  let searchBoxValue;
   let searchRef;
   async function searchKeyDown(e) {
     if (e.key === 'Enter') {
-      if (!query) return;
-      let response = await fetch(`/blocks/search?q=${query}`);
-      if (response.ok) {
-        const json = await response.json();
-        console.log(json); 
-        blocks = json.pages;
-      } else {
-        console.log('error');
-        alert('error');
-      }
+      curQuery = searchBoxValue;
+      curPage = 0;
+      loadBlockPromise = loadBlocks();
     }
   }
   async function docKeyDown(e) {
@@ -85,6 +64,16 @@
     }
   }
 
+  async function pageInc({ detail }) {
+    curPage += detail;
+    if (curPage < 0) {
+      curPage = 0;
+    } else if (curPage > curMaxPage - 1) {
+      curPage = curMaxPage - 1;
+    } else {
+      loadBlockPromise = loadBlocks();
+    }
+  }
 </script>
 
 <svelte:head>
@@ -96,11 +85,17 @@
 <div class="px-4 py-2 text-white bg-indigo-900/50">
   <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
     <div class="flex items-center gap-4">
-      <input type="text" class="h-8 px-3 rounded text-slate-200 bg-slate-900/50" placeholder="Search..." bind:this={searchRef} bind:value={query} on:keypress={searchKeyDown}>
+      <input type="text" class="h-8 px-3 rounded text-slate-200 bg-slate-900/50" placeholder="Search..." bind:this={searchRef} bind:value={searchBoxValue} on:keypress={searchKeyDown}>
     </div>
     <div class="flex items-center">
       <div>
-        Page {curPage + 1}
+        {#await loadBlockPromise}
+          Loading...
+        {:then blocks} 
+          Page {curPage + 1} of {curMaxPage + 1}
+        {:catch error}
+          {error}
+        {/await}
       </div>
       <Avatar />
     </div>
@@ -148,10 +143,16 @@
   </div>
 
   <div class="flex-1 space-y-2">
-    {#if blocks.length}
-      {#each blocks as block}
-        <Block {block} definition={definition} />
+    {#await loadBlockPromise}
+      Loading...
+    {:then blocks} 
+      {#each blocks as block, index}
+        <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} />
+      {:else}
+        No blocks found.
       {/each}
-    {/if}
+    {:catch error}
+      {error}
+    {/await}
   </div>
 </div>

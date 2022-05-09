@@ -1,5 +1,7 @@
 <script>
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
+	const dispatch = createEventDispatcher();
+
 	export let definition = {
 		sheets: [
 			{
@@ -21,6 +23,10 @@
 		aLV: 0,
 		tlNote: 'TLNote'
 	};
+	export let isFirstBlock = false;
+	export let isLastBlock = false;
+
+	let editorRef = [];
 
 	let fields = ['field_1'];
 	$: fields = definition.sheets.find(sheet => sheet.name === block.sheet).fields;
@@ -38,6 +44,33 @@
 	function blured() {
 		expaned = false;
 	}
+	function keydown(e, fieldId) {
+		let curFieldsLength = 0;
+		for (const fieldKey in block.oStrs) {
+			if (Object.hasOwnProperty.call(block.oStrs, fieldKey)) {
+				if (fields.includes(fieldKey)) {
+					curFieldsLength++;
+				}
+			}
+		}
+		
+		if (isFirstBlock && fieldId === 0 && e.key === 'Tab' && e.shiftKey) {
+			e.preventDefault();
+			e.stopPropagation();
+			dispatch('pageInc', -1);
+		}
+		if (isLastBlock && fieldId === curFieldsLength - 1 && e.key === 'Tab' && !e.shiftKey) {
+			e.preventDefault();
+			e.stopPropagation();
+			dispatch('pageInc', 1);
+		}
+	}
+	onMount(() => {
+		if (isFirstBlock) {
+			editorRef[0].focus();
+			editorRef[0].select();
+		}
+	});
 </script>
 
 <div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800">
@@ -55,7 +88,7 @@
 				</div>
 			{/if}
 
-			{#each fields as field}
+			{#each fields as field, fieldId}
 				{#if block.oStrs[field]}
 					<h2 class="mb-1 text-sky-300/50">{field}</h2>
 					<div class="flex gap-1 text-sm">
@@ -69,10 +102,12 @@
 							/>
 							<!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded outline-none pointer-events-none">{block.oStrs[field]}</div> -->
 							<textarea
+								bind:this={editorRef[fieldId]}
 								bind:value={block.tStrs[field]}
 								on:input={() => (editing = true)}
 								on:focus={focused}
 								on:blur={blured}
+								on:keydown={(e) => keydown(e, fieldId)}
 								class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-36 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
 									? 'ring-2 ring-purple-800 bg-purple-900/50'
 									: 'focus:ring-sky-500 focus:ring-2 bg-slate-900/25'}"
