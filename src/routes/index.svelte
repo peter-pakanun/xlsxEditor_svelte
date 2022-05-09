@@ -184,7 +184,7 @@
         <input type="checkbox" class="hidden peer" bind:checked={curSheetIsAll} />
         <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
           <div class="w-1 mr-1 bg-sky-500 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
-          <div class="flex-1 px-4 py-2" on:click={(e) => setActiveSheet('__all', true)}>All Sheets</div>
+          <div class="flex-1 px-4 py-2" on:click={(e) => setActiveSheet('__all', true)}>๛ All Sheets</div>
         </div>
       </div>
       <!-- Red/Orange -->
@@ -192,7 +192,7 @@
         <input type="checkbox" class="hidden peer" bind:checked={curSheetIsAttention} />
         <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
           <div class="w-1 mr-1 bg-orange-500 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
-          <div class="flex-1 px-4 py-2" on:click={(e) => setActiveSheet('__attention', true)}>Attention Required</div>
+          <div class="flex-1 px-4 py-2" on:click={(e) => setActiveSheet('__attention', true)}>๛ Attention Required</div>
         </div>
       </div>
     </div>
