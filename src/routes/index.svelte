@@ -158,3 +158,9 @@
     {/await}
   </div>
 </div>
+
+<style>
+  :global(body) {
+    overflow-y: scroll;
+  }
+</style>
