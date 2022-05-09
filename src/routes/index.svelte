@@ -19,6 +19,7 @@
     }
   }
 
+  let sheetRefMaps = {};
   let curSheet = '__all';
   let curQuery = '';
   let curPage = 0;
@@ -31,7 +32,7 @@
   $: curSheetIsAttention = curSheet === '__attention';
 
   async function loadBlocks() {
-    const response = await fetch(`/blocks/${curSheet}?q=${curQuery}&page=${curPage}`);
+    const response = await fetch(`/blocks/${curSheet}?q=${curQuery ?? ""}&page=${curPage}`);
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -52,10 +53,13 @@
       curSheet = sheetname;
       curPage = 0;
       loadBlockPromise = loadBlocks();
+      if (sheetRefMaps[sheetname]) {
+        sheetRefMaps[sheetname].scrollIntoView();
+      }
     }
   }
 
-  let searchBoxValue;
+  let searchBoxValue = "";
   let searchRef;
   async function searchKeyDown(e) {
     if (e.key === 'Enter') {
@@ -82,6 +86,41 @@
       e.preventDefault();
       e.stopPropagation();
       pageInc({detail: 1});
+    }
+
+    // ALT + UP
+    if (e.altKey && e.key === 'ArrowUp') {
+      e.preventDefault();
+      e.stopPropagation();
+      let index = definition.sheets.findIndex(sheet => sheet.name === curSheet);
+      if (curSheetIsAll) {
+        setActiveSheet(definition.sheets[definition.sheets.length - 1].name);
+      } else if (curSheetIsAttention) {
+        setActiveSheet('__all');
+      } else {
+        if (index > 0) {
+          setActiveSheet(definition.sheets[index - 1].name);
+        } else {
+          setActiveSheet('__attention');
+        }
+      }
+    }
+    // ALT + DOWN
+    if (e.altKey && e.key === 'ArrowDown') {
+      let index = definition.sheets.findIndex(sheet => sheet.name === curSheet);
+      e.preventDefault();
+      e.stopPropagation();
+      if (curSheetIsAll) {
+        setActiveSheet('__attention');
+      } else if (curSheetIsAttention) {
+        setActiveSheet(definition.sheets[0].name);
+      } else {
+        if (index < definition.sheets.length - 1) {
+          setActiveSheet(definition.sheets[index + 1].name);
+        } else {
+          setActiveSheet('__all');
+        }
+      }
     }
   }
 
@@ -172,7 +211,7 @@
       {/if}
       {#each definition.sheets as sheet}
         {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-red-500' : sheet.attentionLevel >= 1 ? 'bg-orange-500' : ''}
-        <div class="text-slate-200">
+        <div class="text-slate-200" bind:this={sheetRefMaps[sheet.name]}>
           <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
           <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
             <div class="w-1 mr-1 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75 {colorClass}"></div>
