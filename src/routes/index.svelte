@@ -41,9 +41,11 @@
     definition.sheets = definition.sheets;
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
-    curSheet = sheetname;
-    curPage = 0;
-    loadBlockPromise = loadBlocks();
+    if (curSheet !== sheetname) {
+      curSheet = sheetname;
+      curPage = 0;
+      loadBlockPromise = loadBlocks();
+    }
   }
 
   let searchBoxValue;
