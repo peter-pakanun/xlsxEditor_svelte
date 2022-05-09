@@ -1,5 +1,7 @@
 import clientPromise from '$lib/db';
 
+let pageSize = 20;
+
 export async function get({ params, locals, url }) {
   let { page } = params;
   let { user } = locals;
@@ -14,6 +16,14 @@ export async function get({ params, locals, url }) {
     return {
       status: 403,
     };
+  }
+  if (!query) {
+    return {
+      status: 400,
+    };
+  }
+  if (!page || Number.isNaN(page)) {
+    page = 0;
   }
 
   const client = await clientPromise;
@@ -33,13 +43,27 @@ export async function get({ params, locals, url }) {
     },
     {
       '$sort': {
-        aLV: -1
+        aLV: -1,
       }
     },
     {
-      $limit: 20
+      $facet: {
+        'total': [
+          {
+            '$count': 'sheet'
+          }
+        ],
+        'pages': [
+          {
+            '$skip': page * pageSize
+          },
+          {
+            '$limit': pageSize
+          }
+        ],
+      }
     },
-  ]).toArray().catch(() => { console.error('error'); });
+  ]).toArray().catch((e) => { console.error(e); });
 
   if (!Array.isArray(searchResults)) {
     return {
@@ -48,6 +72,9 @@ export async function get({ params, locals, url }) {
   }
 
   return {
-    body: searchResults,
+    body: {
+      pages: searchResults[0].pages,
+      total: searchResults[0].total[0].sheet,
+    }
   }
 }

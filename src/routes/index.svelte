@@ -69,7 +69,7 @@
       if (response.ok) {
         const json = await response.json();
         console.log(json); 
-        blocks = json;
+        blocks = json.pages;
       } else {
         console.log('error');
         alert('error');
@@ -92,7 +92,7 @@
 
 <svelte:body on:keydown={docKeyDown}></svelte:body>
 
-<div class="px-6 py-2 text-white bg-indigo-900/50">
+<div class="px-4 py-2 text-white bg-indigo-900/50">
   <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
     <div class="flex items-center gap-4">
       <input type="text" class="h-8 px-3 rounded text-slate-200 bg-slate-900/50" placeholder="Search..." bind:this={searchRef} bind:value={query} on:keypress={searchKeyDown}>
@@ -106,7 +106,7 @@
   </nav>
 </div>
 
-<div class="flex gap-4 m-2 mx-auto max-w-7xl">
+<div class="flex gap-4 m-2 mx-auto max-w-7xl px-4">
   <div>
     <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md bg-slate-800 max-h-96">
       {#if lv2Sheets.length}

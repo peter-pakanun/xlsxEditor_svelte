@@ -63,7 +63,7 @@
 							<input class="hidden peer" type="checkbox" name="" id="" tabindex="-1" bind:checked={expaned} />
 							<textarea
 								bind:value={block.oStrs[field]}
-								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-48 text-slate-400 bg-inherit peer-checked:bg-slate-900/25"
+								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-36 text-slate-400 bg-inherit peer-checked:bg-slate-900/25"
 								readonly
 								tabindex="-1"
 							/>
@@ -73,7 +73,7 @@
 								on:input={() => (editing = true)}
 								on:focus={focused}
 								on:blur={blured}
-								class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-48 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
+								class="w-full h-8 p-1 ring-offset-1 ring-offset-transparent peer-checked:h-36 transition-all rounded outline-none resize-none shadow-inner peer-checked:bg-slate-900/50 text-slate-200 {editing
 									? 'ring-2 ring-purple-800 bg-purple-900/50'
 									: 'focus:ring-sky-500 focus:ring-2 bg-slate-900/25'}"
 							/>
