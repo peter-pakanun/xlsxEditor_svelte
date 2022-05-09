@@ -25,6 +25,7 @@
   let curPage = 0;
   let curMaxPage = 0;
   let loadBlockPromise = loadBlocks();
+  let fetchingBlocks = false;
 
   let curSheetIsAll = true;
   $: curSheetIsAll = curSheet === '__all';
@@ -41,9 +42,9 @@
     return json.blocks;
   }
 
-  let loadingSheetData = false;
   async function setActiveSheet(sheetname) {
-    if (loadingSheetData) return;
+    if (fetchingBlocks) return;
+    fetchingBlocks = true;
     definition.sheets.forEach(sheet => {
       sheet.active = sheet.name === sheetname;
     });
@@ -51,13 +52,12 @@
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
     if (curSheet !== sheetname) {
-      loadingSheetData = true;
       curQuery = searchBoxValue;
       curSheet = sheetname;
       curPage = 0;
       loadBlockPromise = loadBlocks();
       await loadBlockPromise;
-      loadingSheetData = false;
+      fetchingBlocks = false;
       if (sheetRefMaps[sheetname]) {
         sheetRefMaps[sheetname].scrollIntoView();
       }
@@ -67,10 +67,13 @@
   let searchBoxValue = "";
   let searchRef;
   async function searchKeyDown(e) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !fetchingBlocks) {
       curQuery = searchBoxValue;
       curPage = 0;
+      fetchingBlocks = true;
       loadBlockPromise = loadBlocks();
+      await loadBlockPromise;
+      fetchingBlocks = false;
     }
   }
   async function docKeyDown(e) {
@@ -130,13 +133,17 @@
   }
 
   async function pageInc({ detail }) {
+    if (fetchingBlocks) return;
     curPage += detail;
     if (curPage < 0) {
       curPage = 0;
     } else if (curPage > curMaxPage - 1) {
       curPage = curMaxPage - 1;
     } else {
+      fetchingBlocks = true;
       loadBlockPromise = loadBlocks();
+      await loadBlockPromise;
+      fetchingBlocks = false;
     }
   }
 </script>
