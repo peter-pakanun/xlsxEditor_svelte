@@ -81,6 +81,7 @@
       e.preventDefault();
       e.stopPropagation();
       searchRef.focus();
+      searchRef.select();
     }
   }
 
