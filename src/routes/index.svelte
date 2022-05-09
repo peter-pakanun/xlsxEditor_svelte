@@ -158,7 +158,7 @@
         {/each}
       {/if}
       {#each definition.sheets as sheet}
-        {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-orange-500/75' : sheet.attentionLevel >= 1 ? 'bg-orange-500/75' : ''}
+        {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-red-500' : sheet.attentionLevel >= 1 ? 'bg-orange-500' : ''}
         <div class="text-slate-200">
           <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
           <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
