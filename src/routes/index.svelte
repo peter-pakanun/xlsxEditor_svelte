@@ -178,7 +178,7 @@
 </div>
 
 <div class="flex gap-4 px-4 m-2 mx-auto max-w-7xl">
-  <div>
+  <div class="w-80">
 
     <div class="flex flex-col mb-3 overflow-x-hidden rounded shadow-md bg-slate-800">
       <!-- All Sheets -->
