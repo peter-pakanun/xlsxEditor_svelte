@@ -8,7 +8,6 @@
 
 	let classProp = '';
   export { classProp as class };
-	export let inputRef = null;
 
 	export async function logout() {
 		userMenuVisible = false;
