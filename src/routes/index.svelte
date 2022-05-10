@@ -34,8 +34,30 @@
   let curSheetIsAttention = false;
   $: curSheetIsAttention = curSheet === '__attention';
 
+  async function fetchWithTimeout(resource, options = {}) {
+    const { timeout = 5000 } = options;
+    
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal  
+    });
+    clearTimeout(id);
+    return response;
+  }
+
   async function loadBlocks() {
-    const response = await fetch(`/blocks/${curSheet}?q=${curQuery ?? ""}&page=${curPage}`);
+    let response;
+    try {
+      response = await fetchWithTimeout(`/blocks/${curSheet}?q=${curQuery ?? ""}&page=${curPage}`);
+    } catch (e) {
+      if (e.name === 'AbortError') {
+        throw new Error("Fetching blocks timed out.");
+      } else {
+        throw e;
+      }
+    }
     if (!response.ok) {
       throw new Error(response.statusText);
     }
@@ -250,7 +272,7 @@
         <span class="text-2xl">No results found {#if curSheet !== "__all" && curSheet !== "__attention"}<span> inside "<strong>{curSheet}</strong>" </span>{/if} for query string "<strong>{curQuery}</strong>".</span>
       {/each}
     {:catch error}
-      {error}
+      <span class="text-2xl font-bold text-red-500">{error}</span>
     {/await}
   </div>
 </div>
