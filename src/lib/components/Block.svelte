@@ -5,28 +5,30 @@
 		sheets: [
 			{
 				name: 'sheet_1',
-				fields: ['field_1'],
+				fields: ['Fieldname'],
 				attentionLevel: 1
 			}
 		]
 	};
 	export let block = {
-		id: 'identifier',
-		sheet: 'sheet_name',
+		id: 'ID',
+		sheet: 'Sheet Name',
 		oStrs: {
-			field_1: 'value'
+			"Fieldname": 'Original English'
 		},
 		tStrs: {
-			field_1: 'value'
+			"Fieldname": 'Translated text'
 		},
 		aLV: 0,
-		tlNote: 'TLNote'
+		tlNote: 'Translation note will be displayed here, if any.'
 	};
 	export let isFirstBlock = false;
 	export let isLastBlock = false;
 
-	let fields = ['field_1'];
-	$: fields = definition.sheets.find((sheet) => sheet.name === block.sheet).fields;
+	export let forceOpen = false;
+
+	let fields = ['Fieldname'];
+	$: fields = definition.sheets.find((sheet) => sheet.name === block.sheet)?.fields ?? ["Fieldname"];
 
 	let colorClass;
 	$: colorClass = 
@@ -35,6 +37,7 @@
 										 'bg-slate-700';
 
 	let expaned = false;
+	$: expaned = forceOpen ? true : expaned;
 </script>
 
 <div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800 group">
