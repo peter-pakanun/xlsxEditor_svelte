@@ -14,10 +14,14 @@
     if (e.key === 'F1') {
       e.preventDefault();
       e.stopPropagation();
-      helpVisible = !helpVisible;
-      if (!helpVisible && window?.localStorage) {
-        window.localStorage.helpDiscarded = 1;
-      }
+      toggleHelp();
+    }
+  }
+
+  function toggleHelp() {
+    helpVisible = !helpVisible;
+    if (!helpVisible && window?.localStorage) {
+      window.localStorage.helpDiscarded = 1;
     }
   }
 </script>
@@ -41,7 +45,7 @@
         </p>
       </div>
 
-      <div class="px-3 py-2 space-y-1 rounded bg-slate-800">
+      <div class="px-3 py-2 space-y-1 rounded cursor-pointer bg-slate-800" on:click={toggleHelp}>
         <div>Press <kbd class="text-base">F1</kbd> to show/hide this help.</div>
       </div>
 
