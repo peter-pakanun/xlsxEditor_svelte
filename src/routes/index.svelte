@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Block from '$lib/components/Block.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
+  import HelpOverlay from '$lib/components/HelpOverlay.svelte';
 
   export let definition;
   
@@ -154,6 +155,8 @@
 </svelte:head>
 
 <svelte:body on:keydown={docKeyDown}></svelte:body>
+
+<HelpOverlay />
 
 <div class="px-4 py-2 text-white bg-indigo-900/50">
   <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
