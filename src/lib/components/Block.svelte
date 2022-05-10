@@ -26,6 +26,7 @@
 	export let isLastBlock = false;
 
 	export let forceOpen = false;
+	export let readonly = false;
 
 	let fields = ['Fieldname'];
 	$: fields = definition.sheets.find((sheet) => sheet.name === block.sheet)?.fields ?? ["Fieldname"];
@@ -83,6 +84,7 @@
 								{block}
 								{isFirstBlock}
 								{isLastBlock}
+								{readonly}
 								on:pageInc
 							/>
 						</div>
