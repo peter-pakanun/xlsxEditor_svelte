@@ -6,6 +6,10 @@
   $: user = $session?.user;
 	let userMenuVisible = false;
 
+	let classProp = '';
+  export { classProp as class };
+	export let inputRef = null;
+
 	export async function logout() {
 		userMenuVisible = false;
 		const response = await fetch('/users/logout', {
@@ -24,7 +28,7 @@
 	}
 </script>
 
-<div class="flex items-center">
+<div class="flex items-center {classProp}">
 	{#if user?.username}
 		<div class="relative inline-block">
 			<label for="showUserMenu" class="block w-16 h-16 p-2">
