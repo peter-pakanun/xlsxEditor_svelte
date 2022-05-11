@@ -63,6 +63,7 @@
         })
       });
     } catch (e) {
+      fetchingBlocks = false;
       if (e.name === 'AbortError') {
         throw new Error("Fetching blocks timed out.");
       } else {
