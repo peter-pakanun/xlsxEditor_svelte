@@ -1,10 +1,10 @@
 <script>
-  import { onMount } from 'svelte';
   import Block from '$lib/components/Block.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import HelpOverlay from '$lib/components/HelpOverlay.svelte';
   import Dictionary from '$lib/components/Dictionary.svelte';
   import Translation from '$lib/components/Translation.svelte';
+  import Termbase from '$lib/components/Termbase.svelte';
 
   export let definition;
   
@@ -176,7 +176,7 @@
     }
   }
 
-  let dictRef, transRef;
+  let dictRef, transRef, termsRef;
   async function lookup(str) {
     str = str.trim();
     if (str.length === 0) {
@@ -185,8 +185,12 @@
     if (str.length > 64) {
       return;
     }
-    dictRef.lookup(str);
-    transRef.lookup(str);
+    termsRef.setNewTermSource(str);
+    await Promise.all([
+      dictRef.lookup(str),
+      transRef.lookup(str),
+    ])
+    termsRef.highlighTerm(str);
   }
 </script>
 
@@ -310,10 +314,7 @@
     <Translation bind:this={transRef} />
 
     <!-- Termbase -->
-    <div class="px-3 py-2 overflow-y-auto rounded shadow bg-slate-800">
-      <h1 class="font-bold underline">Termbase</h1>
-      
-    </div>
+    <Termbase bind:this={termsRef} />
 
     <!-- RegEx Translator -->
     <div class="px-3 py-2 overflow-y-auto rounded shadow bg-slate-800">

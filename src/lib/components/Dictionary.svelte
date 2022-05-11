@@ -9,6 +9,7 @@
     }
     lastString = str;
     dictPromise = fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${str}`);
+    await dictPromise;
   }
 </script>
 

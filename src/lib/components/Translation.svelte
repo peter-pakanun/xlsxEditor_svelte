@@ -9,6 +9,7 @@
     lastString = str;
     translatePromise = fetch(`/translate/${str}`);
     googleTranslateURL = `https://translate.google.com/?sl=en&tl=th&text=${encodeURIComponent(str)}&op=translate`;
+    await translatePromise;
   }
 </script>
 
