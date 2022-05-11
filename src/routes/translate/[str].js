@@ -121,7 +121,7 @@ export async function get({ params, locals, url }) {
     };
   }
   let dicts = dictionary.translations.map(dict => {
-    pos = posMap[dict.posTag] || "Other";
+    let pos = posMap[dict.posTag] || "Other";
     return {
       text: dict.displayTarget,
       score: dict.confidence,
