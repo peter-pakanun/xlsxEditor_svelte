@@ -52,7 +52,16 @@
   async function loadBlocks() {
     let response;
     try {
-      response = await fetchWithTimeout(`/blocks/${curSheet}?q=${curQuery ?? ""}&page=${curPage}`);
+      response = await fetchWithTimeout(`/blocks/${curSheet}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          q: curQuery,
+          page: curPage
+        })
+      });
     } catch (e) {
       if (e.name === 'AbortError') {
         throw new Error("Fetching blocks timed out.");
@@ -101,7 +110,10 @@
   let searchRef;
   async function searchKeyDown(e) {
     if (e.key === 'Enter' && !fetchingBlocks) {
-      if (!queryIsValid()) return;
+      if (!queryIsValid()) {
+        fetchingBlocks = false;
+        return;
+      }
       curQuery = searchBoxValue;
       curPage = 0;
       fetchingBlocks = true;
