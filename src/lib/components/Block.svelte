@@ -1,4 +1,6 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
 	import BlockTextarea from '$lib/components/BlockTextarea.svelte';
 
 	export let definition = {
@@ -39,6 +41,22 @@
 
 	let expaned = false;
 	$: expaned = forceOpen ? true : expaned;
+
+	let selectDelayTimeout;
+	function onOriginalSelect(e) {
+		let selectedText = "";
+		if (window.getSelection) {
+			selectedText = window.getSelection().toString();
+		} else if (document.selection && document.selection.type != "Control") {
+			selectedText = document.selection.createRange().text;
+		}
+		if (selectDelayTimeout) {
+			clearTimeout(selectDelayTimeout);
+		}
+		selectDelayTimeout = setTimeout(() => {
+			dispatch('originalSelect', selectedText);
+		}, 200);
+	}
 </script>
 
 <div class="flex overflow-hidden text-xs rounded-lg shadow bg-slate-800 group">
@@ -71,6 +89,7 @@
 							/>
 							<textarea
 								bind:value={block.oStrs[field]}
+								on:select={onOriginalSelect}
 								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-36 group-hover:h-36 bg-slate-500/25 text-slate-400"
 								readonly
 								tabindex="-1"

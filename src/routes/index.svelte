@@ -3,6 +3,7 @@
   import Block from '$lib/components/Block.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import HelpOverlay from '$lib/components/HelpOverlay.svelte';
+  import Dictionary from '$lib/components/Dictionary.svelte';
 
   export let definition;
   
@@ -169,6 +170,12 @@
       fetchingBlocks = false;
     }
   }
+
+  let dictRef;
+  async function lookup(str) {
+    str = str.trim();
+    dictRef.lookup(str);
+  }
 </script>
 
 <svelte:head>
@@ -269,7 +276,7 @@
       <span class="text-2xl">Loading...</span>
     {:then blocks} 
       {#each blocks as block, index}
-        <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} />
+        <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} on:originalSelect={({ detail }) => lookup(detail)} />
       {:else}
         <span class="text-2xl">No results found {#if curSheet !== "__all" && curSheet !== "__attention"}<span> inside "<strong>{curSheet}</strong>" </span>{/if} for query string "<strong>{curQuery}</strong>".</span>
       {/each}
@@ -281,14 +288,7 @@
   <!-- Right Sidebar // Tools -->
   <div class="flex-col py-2 space-y-2 overflow-y-auto w-80">
     <!-- Dictionary -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800">
-      <h1 class="font-bold underline">Dictionary</h1>
-      <div class="text-sm italic">
-        Select a word from original field to lookup.
-        <br/>
-        Tip: you can double click on any word to select it.
-      </div>
-    </div>
+    <Dictionary bind:this={dictRef} />
 
     <!-- Translation -->
     <div class="px-3 py-2 rounded shadow bg-slate-800">
@@ -299,13 +299,13 @@
     </div>
 
     <!-- Termbase -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800">
+    <div class="px-3 py-2 rounded shadow bg-slate-800 max-h-72">
       <h1 class="font-bold underline">Termbase</h1>
       
     </div>
 
     <!-- RegEx Translator -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800">
+    <div class="px-3 py-2 rounded shadow bg-slate-800 max-h-72">
       <h1 class="font-bold underline">RegEx Translator</h1>
       
     </div>
