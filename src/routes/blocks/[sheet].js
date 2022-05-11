@@ -31,25 +31,48 @@ export async function get({ params, locals, url }) {
   const Blocks = client.db().collection(user.language + '_blocks');
 
   let agg = [];
-  if (query) {
-    agg.push({
-      $search: {
-        index: 'default',
-        wildcard: {
-          query,
-          path: {
-            wildcard: '*',
-          },
-          allowAnalyzedField: true
-        }
+
+  let must = [];
+  let mustNot = [];
+  let filter = [];
+  if (sheet.toLowerCase() === '__attention') {
+    filter.push({
+      range: {
+        path: 'aLV',
+        gte: 1,
+      }
+    });
+  } else if (sheet.toLowerCase() !== '__all') {
+    filter.push({
+      text: {
+        path: 'sheet',
+        query: sheet,
+      }
+    });
+  }
+  if (query.trim().length > 0) {
+    must.push({
+      wildcard: {
+        query,
+        path: {
+          wildcard: '*',
+        },
+        allowAnalyzedField: true
       }
     });
   }
 
-  if (sheet.toLowerCase() === '__attention') {
-    agg.push({ $match: { aLV: { $gte: 1 } } });
-  } else if (sheet.toLowerCase() !== '__all') {
-    agg.push({ $match: { sheet } });
+  if (filter.length || must.length || mustNot.length) {
+    agg.push({
+      $search: {
+        index: 'default',
+        compound: {
+          must,
+          mustNot,
+          filter,
+        },
+      }
+    });
   }
 
   agg.push(...[
