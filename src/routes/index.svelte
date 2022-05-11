@@ -20,7 +20,6 @@
     }
   }
 
-  let sheetsContainerRef = null;
   let sheetRefMaps = {};
   let curSheet = '__all';
   let curQuery = '';
@@ -180,7 +179,7 @@
 
 <HelpOverlay />
 
-<div class="px-4 py-2 text-white bg-indigo-900/50">
+<div class="fixed top-0 left-0 right-0 px-4 py-2 text-white bg-indigo-900/50">
   <nav class="flex items-center justify-between h-12 px-4 mx-auto text-lg max-w-7xl">
     <div class="flex items-center gap-4">
       <input type="text" class="h-8 px-3 rounded text-slate-200 bg-slate-900/50" placeholder="Search..." bind:this={searchRef} bind:value={searchBoxValue} on:keypress={searchKeyDown}>
@@ -202,8 +201,10 @@
   </nav>
 </div>
 
-<div class="flex gap-4 px-4 m-2 mx-auto max-w-7xl">
-  <div class="w-80">
+<div class="flex w-full h-full gap-2 px-2 pt-16">
+
+  <!-- Left Sidebar // Sheetlists -->
+  <div class="flex-col py-2 overflow-y-scroll w-80">
 
     <div class="flex flex-col mb-3 overflow-x-hidden rounded shadow-md bg-slate-800">
       <!-- All Sheets -->
@@ -224,7 +225,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col overflow-x-hidden overflow-y-auto rounded shadow-md max-h-[680px] bg-slate-800" bind:this={sheetsContainerRef}>
+    <div class="flex flex-col flex-grow-0 overflow-x-hidden rounded shadow-md bg-slate-800">
       {#if lv2Sheets.length}
         <h1 class="px-2 text-sm text-white bg-red-500">New Entires</h1>
         {#each lv2Sheets as sheet}
@@ -262,7 +263,8 @@
     </div>
   </div>
 
-  <div class="flex-1 space-y-2">
+  <!-- Center // Block editor -->
+  <div class="flex-1 py-2 space-y-2 overflow-y-scroll">
     {#await loadBlockPromise}
       <span class="text-2xl">Loading...</span>
     {:then blocks} 
@@ -275,10 +277,46 @@
       <span class="text-2xl font-bold text-red-500">{error}</span>
     {/await}
   </div>
+
+  <!-- Right Sidebar // Tools -->
+  <div class="flex-col py-2 space-y-2 overflow-y-auto w-80">
+    <!-- Dictionary -->
+    <div class="px-3 py-2 rounded shadow bg-slate-800">
+      <h1 class="font-bold underline">Dictionary</h1>
+      <div class="text-sm italic">
+        Select a word from original field to lookup.
+        <br/>
+        Tip: you can double click on any word to select it.
+      </div>
+    </div>
+
+    <!-- Translation -->
+    <div class="px-3 py-2 rounded shadow bg-slate-800">
+      <h1 class="font-bold underline">Translation</h1>
+      <div class="text-sm italic">
+        Select a word from original field to lookup.
+      </div>
+    </div>
+
+    <!-- Termbase -->
+    <div class="px-3 py-2 rounded shadow bg-slate-800">
+      <h1 class="font-bold underline">Termbase</h1>
+      
+    </div>
+
+    <!-- RegEx Translator -->
+    <div class="px-3 py-2 rounded shadow bg-slate-800">
+      <h1 class="font-bold underline">RegEx Translator</h1>
+      
+    </div>
+  </div>
+
 </div>
 
 <style>
-  :global(body) {
-    overflow-y: scroll;
+  :global(body), :global(html) {
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
   }
 </style>
