@@ -29,7 +29,7 @@
 <svelte:window on:keydown={keydown}></svelte:window>
 
 {#if helpVisible}
-<div class="fixed top-0 left-0 z-30 w-full h-full bg-black/90">
+<div class="fixed top-0 left-0 z-50 w-full h-full bg-black/90">
   <div class="px-4 py-2">
     <div class="flex items-start justify-between gap-1 px-4 mx-auto text-lg max-w-7xl">
 
