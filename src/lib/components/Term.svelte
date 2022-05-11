@@ -61,7 +61,7 @@
   }
 </script>
 
-<form class="flex gap-1 p-1 overflow-hidden text-xs rounded shadow ring-sky-500 transition duration-500 { highlighted ? "ring-2 animate-pulse" : ""} { newTerm ? "bg-emerald-900" : "bg-slate-900"}" on:submit|preventDefault={save} bind:this={formRef}>
+<form class="flex gap-1 p-1 overflow-hidden text-xs rounded shadow ring-sky-500 transition duration-500 { highlighted ? "ring-2 animate-pulse" : ""} { newTerm ? "bg-sky-900" : "bg-slate-900"}" on:submit|preventDefault={save} bind:this={formRef}>
   <div title="{ isRegex ? "Regex" : "Plaintext"} Mode">
     {#if isRegex}
     <svg class="inline-block w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
