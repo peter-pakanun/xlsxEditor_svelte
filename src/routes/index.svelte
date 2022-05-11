@@ -4,6 +4,7 @@
   import Avatar from '$lib/components/Avatar.svelte';
   import HelpOverlay from '$lib/components/HelpOverlay.svelte';
   import Dictionary from '$lib/components/Dictionary.svelte';
+  import Translation from '$lib/components/Translation.svelte';
 
   export let definition;
   
@@ -171,10 +172,14 @@
     }
   }
 
-  let dictRef;
+  let dictRef, transRef;
   async function lookup(str) {
     str = str.trim();
+    if (str.length === 0) {
+      return;
+    }
     dictRef.lookup(str);
+    transRef.lookup(str);
   }
 </script>
 
@@ -286,17 +291,12 @@
   </div>
 
   <!-- Right Sidebar // Tools -->
-  <div class="flex-col py-2 space-y-2 overflow-y-auto w-80">
+  <div class="flex-col py-2 space-y-2 overflow-y-auto w-96">
     <!-- Dictionary -->
     <Dictionary bind:this={dictRef} />
 
     <!-- Translation -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800">
-      <h1 class="font-bold underline">Translation</h1>
-      <div class="text-sm italic">
-        Select a word from original field to lookup.
-      </div>
-    </div>
+    <Translation bind:this={transRef} />
 
     <!-- Termbase -->
     <div class="px-3 py-2 rounded shadow bg-slate-800 max-h-72">

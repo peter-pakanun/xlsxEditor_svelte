@@ -23,6 +23,16 @@ MONGODB_URI="mongodb+srv://<username>:<password>@<address>/<database>?retryWrite
 
 Do one import and create search index named `default`.
 
+## Setup Azure Translator Cognitive Services
+
+Follow this [guide](https://docs.microsoft.com/en-us/azure/cognitive-services/translator/how-to-create-translator-resource) to setup Azure Translator Cognitive Services.
+
+Add the following lines to your `.env` file:
+```ini
+AZURE_TRANSLATE_KEY="<your key>"
+AZURE_TRANSLATE_REGION="<your region>"
+```
+
 ## Developing
 
 ```bash
