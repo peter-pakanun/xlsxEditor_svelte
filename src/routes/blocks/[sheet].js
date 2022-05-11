@@ -5,8 +5,8 @@ let pageSize = 20;
 export async function get({ params, locals, url }) {
   let { user } = locals;
   let { sheet } = params;
-  let query = url.searchParams?.get('q');
-  let page = url.searchParams?.get('page');
+  let query = url.searchParams?.get('q') || '';
+  let page = url.searchParams?.get('page') || '0';
 
   if (!user) {
     return {
