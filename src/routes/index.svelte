@@ -78,6 +78,10 @@
     lv2Sheets = lv2Sheets;
     lv1Sheets = lv1Sheets;
     if (curSheet !== sheetname) {
+      if (!queryIsValid()) {
+        fetchingBlocks = false;
+        return;
+      }
       curQuery = searchBoxValue;
       curSheet = sheetname;
       curPage = 0;
@@ -97,17 +101,7 @@
   let searchRef;
   async function searchKeyDown(e) {
     if (e.key === 'Enter' && !fetchingBlocks) {
-      let splitted = searchBoxValue.match(/\\?.|^$/g).reduce((p, c) => {
-        if(c === '"'){
-          p.quote ^= 1;
-        }else if(!p.quote && c === ' '){
-          p.a.push('');
-        }else{
-          p.a[p.a.length-1] += c.replace(/\\(.)/,"$1");
-        }
-        return  p;
-      }, {a: ['']}).a;
-      console.log(splitted);
+      if (!queryIsValid()) return;
       curQuery = searchBoxValue;
       curPage = 0;
       fetchingBlocks = true;
@@ -116,6 +110,34 @@
       fetchingBlocks = false;
     }
   }
+
+  function queryIsValid() {
+    let splitted = searchBoxValue.match(/\\?.|^$/g).reduce((p, c) => {
+      if(c === '"') {
+        p.quote ^= 1;
+      } else if(!p.quote && c === ' ') {
+        p.a.push('');
+      } else {
+        p.a[p.a.length-1] += c.replace(/\\(.)/,"$1");
+      }
+      return  p;
+    }, {a: ['']}).a;
+    splitted = splitted.map(s => s.trim());
+    splitted = splitted.filter(s => s.length > 0);
+    let hasWildcard = false;
+    for (let s of splitted) {
+      if (s.includes('*') || s.includes('?')) {
+        hasWildcard = true;
+        break;
+      }
+    }
+    if (hasWildcard && splitted.length > 1) {
+      alert('You can only search for one term at a time in wildcard mode.');
+      return false;
+    }
+    return true;
+  }
+
   async function docKeyDown(e) {
     if (e.target !== searchRef && (e.key === 'F3' || ((e.ctrlKey || e.metaKey) && e.key === 'f'))) {
       e.preventDefault();
