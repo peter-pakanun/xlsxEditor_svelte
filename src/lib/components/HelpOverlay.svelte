@@ -16,6 +16,9 @@
       e.stopPropagation();
       toggleHelp();
     }
+    if (e.key === 'Escape' && helpVisible) {
+      helpVisible = false;
+    }
   }
 
   function toggleHelp() {
