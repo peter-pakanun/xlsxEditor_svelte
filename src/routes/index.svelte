@@ -112,7 +112,7 @@
   }
 
   function queryIsValid() {
-    let splitted = searchBoxValue.match(/\\?.|^$/g).reduce((p, c) => {
+    let splitted = searchBoxValue.trim().match(/\\?.|^$/g).reduce((p, c) => {
       if(c === '"') {
         p.quote ^= 1;
       } else if(!p.quote && c === ' ') {
