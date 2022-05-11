@@ -22,6 +22,7 @@
     }
   }
 
+  let mainCatRef;
   let sheetRefMaps = {};
   let curSheet = '__all';
   let curQuery = '';
@@ -85,6 +86,9 @@
       fetchingBlocks = false;
       if (!noJump && sheetRefMaps[sheetname]) {
         sheetRefMaps[sheetname].scrollIntoViewIfNeeded();
+      }
+      if (sheetname === '__all' || sheetname === '__attention') {
+        mainCatRef.scrollIntoViewIfNeeded();
       }
     }
   }
@@ -221,7 +225,7 @@
   <!-- Left Sidebar // Sheetlists -->
   <div class="flex-col py-2 overflow-y-scroll w-80">
 
-    <div class="flex flex-col mb-3 overflow-x-hidden rounded shadow-md bg-slate-800">
+    <div class="flex flex-col mb-3 overflow-x-hidden rounded shadow-md bg-slate-800" bind:this={mainCatRef}>
       <!-- All Sheets -->
       <div class="text-slate-100">
         <input type="checkbox" class="hidden peer" bind:checked={curSheetIsAll} />
@@ -240,11 +244,11 @@
       </div>
     </div>
 
-    <div class="flex flex-col flex-grow-0 overflow-x-hidden rounded shadow-md bg-slate-800">
+    <div class="flex flex-col flex-grow-0 shadow-md">
       {#if lv2Sheets.length}
-        <h1 class="px-2 text-sm text-white bg-red-500">New Entires</h1>
+        <h1 class="px-2 overflow-hidden text-sm text-white bg-red-500 rounded-tl">Sheet with new cell</h1>
         {#each lv2Sheets as sheet}
-          <div class="text-slate-200">
+          <div class="bg-slate-800 text-slate-200">
             <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
             <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
               <div class="w-1 mr-1 bg-red-500 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
@@ -252,11 +256,12 @@
             </div>
           </div>
         {/each}
+        <div class="h-2"></div>
       {/if}
       {#if lv1Sheets.length}
-        <h1 class="px-2 text-sm text-white bg-orange-500">Changed Entires</h1>
+        <h1 class="px-2 overflow-hidden text-sm text-white bg-orange-500 rounded-tl">Sheet with changed cell</h1>
         {#each lv1Sheets as sheet}
-          <div class="text-slate-200">
+          <div class="bg-slate-800 text-slate-200">
             <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
             <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
               <div class="w-1 mr-1 bg-orange-500 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75"></div>
@@ -264,10 +269,13 @@
             </div>
           </div>
         {/each}
+        <div class="h-2"></div>
       {/if}
+
+      <h1 class="px-2 overflow-hidden text-sm text-white rounded-tl bg-sky-500">All sheets</h1>
       {#each definition.sheets as sheet}
         {@const colorClass = sheet.attentionLevel >= 2 ? 'bg-red-500' : sheet.attentionLevel >= 1 ? 'bg-orange-500' : ''}
-        <div class="text-slate-200" bind:this={sheetRefMaps[sheet.name]}>
+        <div class="bg-slate-800 text-slate-200" bind:this={sheetRefMaps[sheet.name]}>
           <input type="checkbox" class="hidden peer" bind:checked={sheet.active} />
           <div class="flex transition-all duration-75 border-b cursor-pointer border-slate-900 group peer-checked:bg-blue-500/75 hover:bg-blue-500/50">
             <div class="w-1 mr-1 group-hover:w-2 group-hover:mr-0 group-hover:transition-all group-hover:duration-75 {colorClass}"></div>
