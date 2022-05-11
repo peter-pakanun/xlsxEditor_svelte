@@ -27,13 +27,13 @@
       {:then translatedObj}
 
         <div class="px-3 pt-2 pb-3 rounded shadow bg-slate-700">
-          <div class="text-lg font-bold text-sky-500">{translatedObj.translation}</div>
+          <div class="text-lg font-bold text-slate-200">{translatedObj.translation}</div>
 
           <div class="space-y-2">
             {#each translatedObj.dicts as dict}
               <div class="text-xs">
                 <span>({dict.pos}) </span>
-                <span>{dict.text}</span>
+                <span class="text-slate-200">{dict.text}</span>
                 <div class="w-20 h-1 mb-1 overflow-hidden rounded-full bg-slate-400/50">
                   <div class="h-full bg-sky-500/50" style="width: {(dict.score*100).toFixed(1)}%;">&nbsp;</div>
                 </div>
