@@ -294,7 +294,7 @@
   </div>
 
   <!-- Right Sidebar // Tools -->
-  <div class="flex-col py-2 space-y-2 overflow-y-auto w-96">
+  <div class="grid gap-2 py-2 grid-rows-8 w-96">
     <!-- Dictionary -->
     <Dictionary bind:this={dictRef} />
 
@@ -302,15 +302,15 @@
     <Translation bind:this={transRef} />
 
     <!-- Termbase -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800 max-h-72">
+    <div class="px-3 py-2 overflow-y-auto rounded shadow bg-slate-800">
       <h1 class="font-bold underline">Termbase</h1>
       
     </div>
 
     <!-- RegEx Translator -->
-    <div class="px-3 py-2 rounded shadow bg-slate-800 max-h-72">
+    <div class="px-3 py-2 overflow-y-auto rounded shadow bg-slate-800">
       <h1 class="font-bold underline">RegEx Translator</h1>
-      
+
     </div>
   </div>
 

@@ -12,7 +12,7 @@
   }
 </script>
 
-<div class="px-3 py-2 space-y-2 overflow-y-auto rounded shadow bg-slate-800 max-h-72">
+<div class="px-3 py-2 space-y-2 overflow-y-auto rounded shadow bg-slate-800">
   <h1 class="font-bold underline">Dictionary</h1>
   {#if dictPromise === undefined}
   <div class="text-sm italic">
