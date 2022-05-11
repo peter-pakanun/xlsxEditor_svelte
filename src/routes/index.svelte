@@ -97,6 +97,17 @@
   let searchRef;
   async function searchKeyDown(e) {
     if (e.key === 'Enter' && !fetchingBlocks) {
+      let splitted = searchBoxValue.match(/\\?.|^$/g).reduce((p, c) => {
+        if(c === '"'){
+          p.quote ^= 1;
+        }else if(!p.quote && c === ' '){
+          p.a.push('');
+        }else{
+          p.a[p.a.length-1] += c.replace(/\\(.)/,"$1");
+        }
+        return  p;
+      }, {a: ['']}).a;
+      console.log(splitted);
       curQuery = searchBoxValue;
       curPage = 0;
       fetchingBlocks = true;
