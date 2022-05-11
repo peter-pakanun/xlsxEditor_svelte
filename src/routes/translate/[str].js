@@ -36,6 +36,12 @@ export async function get({ params, locals, url }) {
     };
   }
   str = str.trim().toLowerCase();
+  if (str.length > 64) {
+    return {
+      status: 400,
+      body: "Too long",
+    };
+  }
 
   const client = await clientPromise;
   const TranslationCache = client.db().collection('TranslationCache');

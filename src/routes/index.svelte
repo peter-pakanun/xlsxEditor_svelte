@@ -178,6 +178,9 @@
     if (str.length === 0) {
       return;
     }
+    if (str.length > 64) {
+      return;
+    }
     dictRef.lookup(str);
     transRef.lookup(str);
   }
