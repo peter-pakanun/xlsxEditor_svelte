@@ -93,15 +93,15 @@
   </div>
 
   <div>
-    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 transition {hasConflicts ? "ring-red-500 ring-1" : "ring-purple-500"} {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}} on:input bind:this={sourceInputRef}>
+    <input class="w-full px-1 leading-none rounded outline-none placeholder-slate-600 bg-slate-800 transition {hasConflicts ? "ring-red-500 ring-1" : "ring-purple-500"} {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}} on:input bind:this={sourceInputRef}>
   </div>
 
   <div>
-    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {targetEdited ? "ring-1" : ""}" type="text" bind:value={target} placeholder="Target" on:input={() => {targetEdited = true}} on:input>
+    <input class="w-full px-1 leading-none rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {targetEdited ? "ring-1" : ""}" type="text" bind:value={target} placeholder="Target" on:input={() => {targetEdited = true}} on:input>
   </div>
 
   <div>
-    <input class="w-12 px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {weightEdited ? "ring-1" : ""}" type="number" min="0" max="100" step="1" bind:value={weight} on:input={() => {weightEdited = true}} on:input>
+    <input class="w-12 px-1 leading-none rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {weightEdited ? "ring-1" : ""}" type="number" min="0" max="100" step="1" bind:value={weight} on:input={() => {weightEdited = true}} on:input>
   </div>
 
   <div class="flex gap-1">
