@@ -10,16 +10,26 @@
 
   let highlighted = false;
   let formRef;
-  export async function setHL(state) {
+  let sourceInputRef;
+  export async function setHL(state, focus = false) {
     highlighted = !!state;
     if (highlighted) {
       setTimeout(() => {
         formRef.scrollIntoView();
+        if (focus) {
+          sourceInputRef.focus();
+        }
       }, 100);
       setTimeout(() => {
         highlighted = false;
       }, 3000);
     }
+  }
+
+  export async function resetEdited() {
+    sourceEdited = false;
+    targetEdited = false;
+    weightEdited = false;
   }
 
   export function setSource(newStr) {
@@ -83,7 +93,7 @@
   </div>
 
   <div>
-    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 transition {hasConflicts ? "ring-red-500 ring-1" : "ring-purple-500"} {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}} on:input>
+    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 transition {hasConflicts ? "ring-red-500 ring-1" : "ring-purple-500"} {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}} on:input bind:this={sourceInputRef}>
   </div>
 
   <div>
@@ -108,7 +118,7 @@
       </svg>
     </button>
     {:else}
-    <button class="transition hover:text-slate-100" on:click={() => dispatch('delete')}>
+    <button type="button" class="transition hover:text-slate-100" on:click={() => dispatch('delete')}>
       <svg class="inline-block w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
       </svg>

@@ -1,4 +1,5 @@
 import clientPromise from '$lib/db';
+import { ObjectId } from 'mongodb';
 
 export async function get({ locals }) {
   let { user } = locals;
@@ -83,12 +84,94 @@ export async function post({ locals, request }) {
   };
 }
 
+export async function put({ locals, request }) {
+  let { user } = locals;
+  let term = await request.json().catch(() => null) || {};
+
+  if (!user) {
+    return {
+      status: 401,
+    };
+  }
+  if (!user.language) {
+    return {
+      status: 403,
+    };
+  }
+
+  let { ok, term: validatedTerm } = validateTerm(term);
+  if (!ok) {
+    return {
+      status: 400,
+      body: {
+        message: validatedTerm.message,
+      },
+    };
+  }
+
+  const client = await clientPromise;
+  const Termbase = client.db().collection('Termbase');
+
+  // check for source conflict
+  let oldTerm = await Termbase.find({
+    language: user.language,
+    source: validatedTerm.source,
+  }).toArray().catch((e) => { console.error(e); });
+  if (oldTerm && oldTerm.length > 0 && oldTerm[0]._id.toString() !== validatedTerm._id) {
+    return {
+      status: 409,
+      body: {
+        message: 'This source is already used',
+      },
+    };
+  }
+
+  let result = await Termbase.updateOne({
+    language: user.language,
+    _id: ObjectId(validatedTerm._id),
+  }, {
+    $set: {
+      source: validatedTerm.source,
+      target: validatedTerm.target,
+      weight: validatedTerm.weight,
+    },
+  }).catch((e) => { console.error(e); });
+
+  if (!result.matchedCount) {
+    return {
+      status: 400,
+      body: {
+        message: 'Term does not exist',
+      },
+    };
+  }
+
+  return {
+    status: 200,
+  }
+}
 
 function validateTerm(term) {
   if (!term || typeof term.source !== 'string' || term.source.trim().length === 0 || typeof term.target !== 'string' || term.target.trim().length === 0) {
     return {
       ok: false,
       message: 'Invalid term',
+    }
+  }
+
+  if (term._id) {
+    if (typeof term._id !== 'string') {
+      return {
+        ok: false,
+        message: 'Invalid term',
+      }
+    }
+    term._id = term._id.trim();
+    if (!/^[a-fA-F0-9]{24}$/.test(term._id)) {
+      return {
+        ok: false,
+        message: 'Invalid term',
+      }
     }
   }
 

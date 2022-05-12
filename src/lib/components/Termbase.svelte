@@ -84,11 +84,39 @@
     loadTerms();
   }
   
-  async function editTerm() {
-    console.log("edit pressed");
+  async function editTerm(term) {
+    let res = await fetch('/termbase/', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        _id: term._id,
+        source: term.source,
+        target: term.target,
+        weight: term.weight
+      })
+    });
+    let data = await res.json();
+    if (!res.ok) {
+      alert("Failed to edit term:\n" + data.message);
+      return;
+    }
+
+    term.ref.resetEdited();
+
+    await loadTerms();
+    let newTerm = terms.find(t => t._id === term._id);
+    if (newTerm.ref) {
+      newTerm.ref.resetEdited();
+      newTerm.ref.setHL(true, true);
+    }
   }
-  async function deleteTerm() {
+  
+  async function deleteTerm(term) {
     console.log("delete pressed");
+    console.log(term);
   }
   
   onMount(loadTerms);
@@ -117,8 +145,8 @@
       bind:hasConflicts={term.hasConflicts}
       bind:this={term.ref}
       on:input={checkConflicts}
-      on:save={editTerm}
-      on:delete={deleteTerm}
+      on:save={() => editTerm(term)}
+      on:delete={() => deleteTerm(term)}
     />
     {/each}
 	</div>
