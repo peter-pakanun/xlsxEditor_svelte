@@ -91,4 +91,64 @@
 
     return tagsAndTerms;
   }
+
+  export function splitTextIntoSpans(str) {
+    let tags = analyzeText(str);
+		if (!Array.isArray(tags) || tags.length === 0) {
+			return [];
+		}
+
+    tags.sort((a, b) => b.e - a.e);
+
+		let before = str;
+		let accumulator = [];
+    let posFromLast = 0;
+		for (let tag of tags) {
+			let after = before.substring(tag.e + 1);
+			let inside = before.substring(tag.s, tag.e + 1);
+			before = before.substring(0, tag.s);
+
+      if (after.length > 0) {
+        accumulator.push({
+          posFromLast: posFromLast++,
+          type: "normal",
+          text: after,
+        });
+      }
+      if (inside.length > 0) {
+        accumulator.push({
+          posFromLast: posFromLast++,
+          type: tag.c,
+          text: inside,
+          replace: tag.t,
+        });
+      }
+		}
+
+    // add the last text, if any
+    if (before.length > 0) {
+      accumulator.push({
+        posFromLast: posFromLast++,
+        type: "normal",
+        text: before,
+      });
+    }
+
+    accumulator.sort((a, b) => b.posFromLast - a.posFromLast);
+
+    let output = [];
+    let index = 0;
+    for (let span of accumulator) {
+      let spanObj = {
+        type: span.type,
+        text: span.text,
+        replace: span.replace,
+      };
+      if (span.type !== "normal") {
+        spanObj.index = index++;
+      }
+      output.push(spanObj);
+    }
+		return output;
+  }
 </script>
