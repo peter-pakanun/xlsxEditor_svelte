@@ -62,8 +62,28 @@
   }
 
   async function createTerm() {
-    console.log("create pressed");
+    let res = await fetch('/termbase', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        source: newTermSource,
+        target: newTermTarget,
+        weight: newTermWeight
+      })
+    });
+    let data = await res.json();
+    if (!res.ok) {
+      alert("Failed to create term:\n" + data.message);
+      return;
+    }
+    newTermRef.setSource("");
+
+    loadTerms();
   }
+  
   async function editTerm() {
     console.log("edit pressed");
   }

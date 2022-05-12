@@ -25,7 +25,7 @@
   export function setSource(newStr) {
     source = newStr;
     target = "";
-    weight = 0;
+    weight = 1;
     sourceEdited = true;
     targetEdited = false;
     weightEdited = false;
