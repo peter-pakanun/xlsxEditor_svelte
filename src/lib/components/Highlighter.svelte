@@ -14,7 +14,7 @@
   $: spanObjs = splitTextIntoSpans(value);
 </script>
 
-<div class="{classProp} relative">
+<div class="{classProp} relative overflow-hidden">
   <input
     class="hidden peer"
     type="checkbox"
@@ -24,13 +24,13 @@
   <textarea
     bind:value={value}
     on:select
-    class="w-full h-full p-1 rounded outline-none resize-none {inputClass}"
+    class="block w-full h-full p-1 leading-relaxed rounded outline-none resize-none {inputClass}"
     {readonly}
     tabindex="-1"
   />
 
 <!-- This div use whitespace-pre, it is important to make sure there're no extra whitespace inside the div. -->
-<div class="absolute top-0 left-0 w-full h-full p-1 text-transparent whitespace-pre rounded outline-none pointer-events-none">
+<div class="absolute top-0 left-0 block w-full h-full p-1 leading-relaxed text-transparent whitespace-pre-line rounded outline-none pointer-events-none">
 {#each spanObjs as spanObj}
 <HighlighterSpan bind:spanObj={spanObj} {spanClass} on:tagClicked />
 {/each}
