@@ -1,13 +1,18 @@
 <script context="module">
-	import { get } from 'svelte/store';
   import { termsStore } from '$lib/stores.js';
+
+  let terms = [];
+  termsStore.subscribe(value => {
+		terms = value;
+	});
+
   export function analyzeText(str) {
     if (!str || typeof str !== 'string') {
       return [];
     }
     // find {} tag
     let acc = {
-      a: [{ t: "" }], // t: text, s: start, e: end, c: code (falsy = ok, 1 = start before end, 2 = end without start)
+      a: [{ t: "" }], // t: text, s: start, e: end, c: code
       i: 0
     };
     let tags = str.match(/\\?.|^$/g).reduce((p, c) => {
@@ -15,7 +20,7 @@
         if (p.a[p.a.length-1].s) {
           // this is open again before close
           p.a[p.a.length-1].e = p.i - 1;
-          p.a[p.a.length-1].c = 1;
+          p.a[p.a.length-1].c = "strayOpen";
           p.a.push({ t: "", s: p.i });
         } else {
           p.a[p.a.length-1].s = p.i;
@@ -27,9 +32,10 @@
           // this is close without open
           p.a[p.a.length-1].s = p.i;
           p.a[p.a.length-1].e = p.i;
-          p.a[p.a.length-1].c = 2;
+          p.a[p.a.length-1].c = "strayClose";
         } else {
           p.a[p.a.length-1].e = p.i;
+          p.a[p.a.length-1].c = "GGGtag";
         }
         p.a.push({ t: "" });
       } else if (p.a[p.a.length-1].s && !p.a[p.a.length-1].e) {
@@ -43,7 +49,6 @@
     tags = tags.filter(t => t.t);
 
     // find terms
-    let terms = get(termsStore);
     let termsFound = [];
     let curIndex = 0;
     while (true) {
@@ -55,7 +60,8 @@
           termsFound.push({
             t: term.target,
             s: foundIndex,
-            e: foundIndex + term.source.length - 1
+            e: foundIndex + term.source.length - 1,
+            c: "term"
           });
           curIndex = foundIndex + term.source.length;
           found = true;
@@ -66,10 +72,23 @@
       }
     }
 
-    if (termsFound.length) {
-      console.log(termsFound);
-    }
+    tags = tags.filter(tag => {
+      for (let term of termsFound) {
+        if (tag.s <= term.s && tag.e >= term.s) {
+          return false;
+        }
+        if (tag.s <= term.e && tag.e >= term.e) {
+          return false;
+        }
+        if (tag.s >= term.s && tag.e <= term.e) {
+          return false;
+        }
+      }
+      return true;
+    })
 
-    return tags;
+    let tagsAndTerms = tags.concat(termsFound);
+
+    return tagsAndTerms;
   }
 </script>
