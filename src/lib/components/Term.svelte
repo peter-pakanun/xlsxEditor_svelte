@@ -36,7 +36,7 @@
     source = newStr;
     target = "";
     weight = 1;
-    sourceEdited = true;
+    sourceEdited = newStr == "" ? false : true;
     targetEdited = false;
     weightEdited = false;
   }
