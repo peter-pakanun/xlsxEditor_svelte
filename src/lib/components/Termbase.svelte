@@ -8,7 +8,6 @@
     terms = await fetch('/termbase').then(res => res.json());
     terms = terms.sort((a, b) => a.source.localeCompare(b.source)).sort((a, b) => b.weight - a.weight);
     terms = terms;
-    console.log(terms);
   }
   
   let newTermRef;
@@ -115,8 +114,25 @@
   }
   
   async function deleteTerm(term) {
-    console.log("delete pressed");
-    console.log(term);
+    if (!confirm("Are you sure you want to delete this term?")) {
+      return;
+    }
+    let res = await fetch('/termbase/', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        _id: term._id
+      })
+    });
+    let data = await res.json();
+    if (!res.ok) {
+      alert("Failed to delete term:\n" + data.message);
+      return;
+    }
+    loadTerms();
   }
   
   onMount(loadTerms);
