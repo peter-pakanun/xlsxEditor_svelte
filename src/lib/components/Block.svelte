@@ -65,6 +65,15 @@
 			dispatch('lookupWord', tag.text);
 			textInputRefs[fieldId].pasteText(tag.replace);
 		}
+		else if (tag.type === 'GGGtag') {
+			textInputRefs[fieldId].pasteText(tag.replace);
+		}
+		else if (tag.type === 'strayOpen') {
+			alert('Stray open bracket');
+		}
+		else if (tag.type === 'strayClose') {
+			alert('Stray close bracket');
+		}
 	}
 </script>
 
@@ -104,6 +113,7 @@
 								class="w-full h-8 transition-all peer-checked:h-36 group-hover:h-36"
 								inputClass="bg-slate-500/25 text-slate-200"
 								spanClass="text-slate-200"
+								readonly
 							/>
 							<!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded outline-none pointer-events-none">{block.oStrs[field]}</div> -->
 							<BlockTextarea
