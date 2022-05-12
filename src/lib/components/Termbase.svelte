@@ -26,7 +26,12 @@
   export function setNewTermSource(sourceStr) {
     let term = terms.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
     if (!term?.ref) {
-      newTermRef.setSource(sourceStr);
+      newTermRef.source = sourceStr;
+      newTermRef.target = "";
+      newTermRef.weight = 0;
+      newTermRef.sourceEdited = true;
+      newTermRef.targetEdited = false;
+      newTermRef.weightEdited = false;
     }
   }
 
