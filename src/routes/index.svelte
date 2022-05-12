@@ -7,6 +7,7 @@
   import Termbase from '$lib/components/Termbase.svelte';
 
   export let definition;
+  export let terms = [];
   
   let lv2Sheets = [];
   for (let sheet of definition.sheets) {
@@ -360,7 +361,7 @@
     <Translation bind:this={transRef} />
 
     <!-- Termbase -->
-    <Termbase bind:this={termsRef} />
+    <Termbase bind:this={termsRef} bind:terms />
 
     <!-- RegEx Translator -->
     <div class="px-3 py-2 overflow-y-auto rounded shadow bg-slate-800">

@@ -1,21 +1,12 @@
 <script>
-  import { onMount } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
+  const dispatch = createEventDispatcher();
 
-  export let term = {
-    source: '',
-    target: '',
-    weight: 0,
-  };
+  export let source = "";
+  export let target = "";
+  export let weight = 1;
   export let newTerm = false;
-
-  let source = "";
-  let target = "";
-  let weight = "";
-  onMount(() => {
-    source = term.source;
-    target = term.target;
-    weight = term.weight;
-  });
+  export let hasConflicts = false;
 
   let highlighted = false;
   let formRef;
@@ -31,15 +22,6 @@
     }
   }
 
-  export function setSource(newStr) {
-    source = newStr;
-    target = "";
-    weight = 0;
-    sourceEdited = true;
-    targetEdited = false;
-    weightEdited = false;
-  }
-
   let sourceEdited = false;
   let targetEdited = false;
   let weightEdited = false;
@@ -52,12 +34,29 @@
     }
   }
 
-  function save(e) {
+  async function save(e) {
     if (!sourceEdited && !targetEdited && !weightEdited) return;
-    sourceEdited = false;
-    targetEdited = false;
-    weightEdited = false;
-    console.log(e);
+    if (source.length <= 0) {
+      alert("Source cannot be empty");
+      return;
+    }
+    if (hasConflicts) {
+      alert("Term's source has conflicts with other terms");
+      return;
+    }
+    if (target.length <= 0) {
+      alert("Target cannot be empty");
+      return;
+    }
+    if (weight < 0) {
+      alert("Weight must not be negative");
+      return;
+    }
+    if (weight > 100) {
+      alert("Weight must not be greater than 100");
+      return;
+    }
+    dispatch('save');
   }
 </script>
 
@@ -75,15 +74,15 @@
   </div>
 
   <div>
-    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 transition ring-purple-500 {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}}>
+    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 transition {hasConflicts ? "ring-red-500 ring-1" : "ring-purple-500"} {sourceEdited ? "ring-1" : ""}" type="text" bind:value={source} placeholder="Source" on:input={() => {sourceEdited = true}} on:input>
   </div>
 
   <div>
-    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {targetEdited ? "ring-1" : ""}" type="text" bind:value={target} placeholder="Target" on:input={() => {targetEdited = true}}>
+    <input class="w-full px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {targetEdited ? "ring-1" : ""}" type="text" bind:value={target} placeholder="Target" on:input={() => {targetEdited = true}} on:input>
   </div>
 
   <div>
-    <input class="w-12 px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {weightEdited ? "ring-1" : ""}" type="number" min="0" max="100" step="1" bind:value={weight} on:input={() => {weightEdited = true}}>
+    <input class="w-12 px-1 rounded outline-none placeholder-slate-600 bg-slate-800 ring-purple-500 {weightEdited ? "ring-1" : ""}" type="number" min="0" max="100" step="1" bind:value={weight} on:input={() => {weightEdited = true}} on:input>
   </div>
 
   <div class="flex gap-1">
@@ -100,7 +99,7 @@
       </svg>
     </button>
     {:else}
-    <button class="transition hover:text-slate-100">
+    <button class="transition hover:text-slate-100" on:click={() => dispatch('delete')}>
       <svg class="inline-block w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
       </svg>
