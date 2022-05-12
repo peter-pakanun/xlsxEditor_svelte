@@ -1,13 +1,11 @@
 <script>
   import { onMount } from 'svelte';
+  import { termsStore } from '$lib/stores.js';
 	import Term from '$lib/components/Term.svelte';
   
-	export let terms = [];
-
   export async function loadTerms() {
-    terms = await fetch('/termbase').then(res => res.json());
-    terms = terms.sort((a, b) => a.source.localeCompare(b.source)).sort((a, b) => b.weight - a.weight);
-    terms = terms;
+    $termsStore = await fetch('/termbase').then(res => res.json());
+    $termsStore.sort((a, b) => a.source.localeCompare(b.source)).sort((a, b) => b.weight - a.weight);
   }
   
   let newTermRef;
@@ -16,7 +14,7 @@
   let newTermWeight = 1;
   let newTermHasConflicts = false;
   export function highlighTerm(sourceStr) {
-    let term = terms.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
+    let term = $termsStore.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
     if (term?.ref) {
       term.ref.setHL(true);
     } else {
@@ -25,7 +23,7 @@
   }
 
   export function setNewTermSource(sourceStr) {
-    let term = terms.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
+    let term = $termsStore.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
     if (!term?.ref) {
       newTermRef.setSource(sourceStr);
     }
@@ -34,11 +32,11 @@
   async function checkConflicts() {
     // clear conflicts
     newTermHasConflicts = false;
-    for (let term of terms) {
+    for (let term of $termsStore) {
       term.hasConflicts = false;
     }
     // check against new term
-    for (let term of terms) {
+    for (let term of $termsStore) {
       if (term.source.toLowerCase() === newTermSource.toLowerCase()) {
         newTermHasConflicts = true;
         term.hasConflicts = true;
@@ -47,8 +45,8 @@
       }
     }
     // check against other terms
-    for (let term of terms) {
-      let t = terms.find(t => t.source.toLowerCase() === term.source.toLowerCase());
+    for (let term of $termsStore) {
+      let t = $termsStore.find(t => t.source.toLowerCase() === term.source.toLowerCase());
       if (t && t !== term) {
         term.hasConflicts = true;
         t.hasConflicts = true;
@@ -56,8 +54,8 @@
       }
     }
     // https://github.com/sveltejs/svelte/issues/3973
-    // terms = terms.sort((a, b) => a.source.localeCompare(b.source)).sort((a, b) => b.weight - a.weight);
-    terms = terms;
+    // $termsStore.sort((a, b) => a.source.localeCompare(b.source)).sort((a, b) => b.weight - a.weight);
+    //$termsStore = terms = terms;
   }
 
   async function createTerm() {
@@ -106,7 +104,7 @@
     term.ref.resetEdited();
 
     await loadTerms();
-    let newTerm = terms.find(t => t._id === term._id);
+    let newTerm = $termsStore.find(t => t._id === term._id);
     if (newTerm.ref) {
       newTerm.ref.resetEdited();
       newTerm.ref.setHL(true, true);
@@ -153,7 +151,7 @@
   />
   
 	<div class="py-2 space-y-0.5">
-    {#each terms as term}
+    {#each $termsStore as term}
 		<Term
       bind:source={term.source}
       bind:target={term.target}
