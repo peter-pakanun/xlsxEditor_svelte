@@ -1,4 +1,5 @@
 <script>
+	import { analyzeText } from '$lib/textAnalyzer.svelte';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 	import BlockTextarea from '$lib/components/BlockTextarea.svelte';
@@ -75,6 +76,7 @@
 			{/if}
 
 			{#each fields as field, fieldId}
+			{@const tags = analyzeText(block.oStrs[field])}
 				{#if block.oStrs[field]}
 					<h2 class="mb-1 text-sky-300/50">{field}</h2>
 					<div class="flex gap-1 text-sm">
