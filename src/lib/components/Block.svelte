@@ -1,8 +1,8 @@
 <script>
-	import { analyzeText } from '$lib/textAnalyzer.svelte';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 	import BlockTextarea from '$lib/components/BlockTextarea.svelte';
+	import Highlighter from '$lib/components/Highlighter.svelte';
 
 	export let definition = {
 		sheets: [
@@ -55,8 +55,16 @@
 			clearTimeout(selectDelayTimeout);
 		}
 		selectDelayTimeout = setTimeout(() => {
-			dispatch('originalSelect', selectedText);
+			dispatch('lookupWord', selectedText);
 		}, 200);
+	}
+
+	let textInputRefs = [];
+	function tagClicked(tag, fieldId) {
+		if (tag.type === 'term') {
+			dispatch('lookupWord', tag.text);
+			textInputRefs[fieldId].pasteText(tag.replace);
+		}
 	}
 </script>
 
@@ -76,7 +84,6 @@
 			{/if}
 
 			{#each fields as field, fieldId}
-			{@const tags = analyzeText(block.oStrs[field])}
 				{#if block.oStrs[field]}
 					<h2 class="mb-1 text-sky-300/50">{field}</h2>
 					<div class="flex gap-1 text-sm">
@@ -89,17 +96,20 @@
 								tabindex="-1"
 								bind:checked={expaned}
 							/>
-							<textarea
+							<Highlighter
 								bind:value={block.oStrs[field]}
+								bind:expaned={expaned}
 								on:select={onOriginalSelect}
-								class="w-full h-8 p-1 transition-all rounded shadow-inner outline-none resize-none peer-checked:h-36 group-hover:h-36 bg-slate-500/25 text-slate-400"
-								readonly
-								tabindex="-1"
+								on:tagClicked={({ detail }) => { tagClicked(detail, fieldId) }}
+								class="w-full h-8 transition-all peer-checked:h-36 group-hover:h-36"
+								inputClass="bg-slate-500/25 text-slate-200"
+								spanClass="text-slate-200"
 							/>
 							<!-- <div class="absolute top-0 left-0 w-full h-20 p-1 text-orange-100 rounded outline-none pointer-events-none">{block.oStrs[field]}</div> -->
 							<BlockTextarea
 								bind:value={block.tStrs[field]}
 								bind:expaned={expaned}
+								bind:this={textInputRefs[fieldId]}
 								{fields}
 								{fieldId}
 								{block}

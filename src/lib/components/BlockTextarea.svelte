@@ -24,7 +24,6 @@
 
 	export let expaned = false;
   function focused(e) {
-		e.target.select();
 		expaned = true;
 	}
 	function blured() {
@@ -52,6 +51,11 @@
 			inputRef.select();
 		}
 	});
+
+	export function pasteText(text) {
+		inputRef.focus();
+		document.execCommand("insertText", false, text);
+	}
 </script>
 
 <textarea

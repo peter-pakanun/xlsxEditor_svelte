@@ -342,7 +342,7 @@
       <span class="text-2xl">Loading...</span>
     {:then blocks} 
       {#each blocks as block, index}
-        <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} on:originalSelect={({ detail }) => lookup(detail)} />
+        <Block {block} definition={definition} isFirstBlock={index === 0} isLastBlock={index === blocks.length - 1} on:pageInc={pageInc} on:lookupWord={({ detail }) => lookup(detail)} />
       {:else}
         <span class="text-2xl">No results found {#if curSheet !== "__all" && curSheet !== "__attention"}<span> inside "<strong>{curSheet}</strong>" </span>{/if} for query string "<strong>{curQuery}</strong>".</span>
       {/each}
