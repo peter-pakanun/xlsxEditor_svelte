@@ -22,9 +22,18 @@
     }
   }
 
-  export let sourceEdited = false;
-  export let targetEdited = false;
-  export let weightEdited = false;
+  export function setSource(newStr) {
+    source = newStr;
+    target = "";
+    weight = 0;
+    sourceEdited = true;
+    targetEdited = false;
+    weightEdited = false;
+  }
+
+  let sourceEdited = false;
+  let targetEdited = false;
+  let weightEdited = false;
   let isRegex = false;
   $: {
     if (source.length >= 2 && source[0] === '/' && source[source.length - 1] === '/') {

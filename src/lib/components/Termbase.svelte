@@ -20,18 +20,15 @@
     let term = terms.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
     if (term?.ref) {
       term.ref.setHL(true);
+    } else {
+      newTermRef.setHL(true);
     }
   }
 
   export function setNewTermSource(sourceStr) {
     let term = terms.find(term => term.source.toLowerCase() === sourceStr.toLowerCase());
     if (!term?.ref) {
-      newTermRef.source = sourceStr;
-      newTermRef.target = "";
-      newTermRef.weight = 0;
-      newTermRef.sourceEdited = true;
-      newTermRef.targetEdited = false;
-      newTermRef.weightEdited = false;
+      newTermRef.setSource(sourceStr);
     }
   }
 
