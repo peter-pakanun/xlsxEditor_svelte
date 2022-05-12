@@ -43,10 +43,16 @@
       }
       p.i += c.length;
       return p;
-    }, acc).a;
+    }, acc);
 
-    // remove empty tags
-    tags = tags.filter(t => t.t);
+    // check if last tag has no end
+    if (tags.a[tags.a.length-1].s && !tags.a[tags.a.length-1].e) {
+      tags.a[tags.a.length-1].e = tags.i;
+      tags.a[tags.a.length-1].c = "strayOpen";
+    }
+
+    // remove empty tags and unused index
+    tags = tags.a.filter(t => t.t);
 
     // find terms
     let termsFound = [];
