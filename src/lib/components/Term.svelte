@@ -22,9 +22,9 @@
     }
   }
 
-  let sourceEdited = false;
-  let targetEdited = false;
-  let weightEdited = false;
+  export let sourceEdited = false;
+  export let targetEdited = false;
+  export let weightEdited = false;
   let isRegex = false;
   $: {
     if (source.length >= 2 && source[0] === '/' && source[source.length - 1] === '/') {
