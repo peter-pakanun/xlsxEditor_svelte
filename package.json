@@ -9,7 +9,7 @@
     "prepare": "svelte-kit sync",
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. .",
     "format": "prettier --ignore-path .gitignore --write --plugin-search-dir=. .",
-    "deploy": "set NODE_ENV=production && node express.js"
+    "deploy": "set NODE_ENV=production&& node express.js"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "next",
