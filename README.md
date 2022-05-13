@@ -35,11 +35,17 @@ AZURE_TRANSLATE_REGION="<your region>"
 
 ## Developing
 
+Start SvelteKit development with the following command:
 ```bash
 npm run dev
 
 # or start the server and open the app in a new browser tab
 npm run dev -- --open
+```
+
+Start SocketIO development with the following command:
+```bash
+node express.js
 ```
 
 ## Building
@@ -54,8 +60,8 @@ You can preview the production build with `npm run preview`.
 
 ## Deploying
 
-By default the application will be deployed to `/build`.
-Just run `node build` on your production server.
+By default the application will be deployed to `/build`, which can be started with `node build`.
+But we have a special Express server with SocketIO that can be started with the following command:
 ```bash
-node build
+npm run deploy
 ```
